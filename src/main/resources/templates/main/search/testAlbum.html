@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>앨범 정보</h1>
+<img th:src="${album.imageUrl}"><br>
+<span th:text="${album.name}"></span>
+<span th:text="${album.id}"></span>
+<span th:text="${album.releaseDate}"></span>
+<div th:each="artist : ${album.artistList}">
+    <span th:text="${artist.name}"></span>
+    <span th:text="${artist.id}"></span>
+</div>
+<table>
+    <thead>
+    <tr>
+        <td>#</td>
+        <td>제목</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="track : ${album.trackList}">
+        <td>
+            <a th:href="@{/music/track/{trackId} (trackId=${track.id})}"
+               th:text="${track.name}"></a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

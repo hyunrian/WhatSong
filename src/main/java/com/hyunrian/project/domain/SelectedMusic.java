@@ -1,8 +1,12 @@
 package com.hyunrian.project.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 @Entity
+//@NoArgsConstructor(access = AccessLevel.PROTECTED) -> queyrdsl join할 때 오류 발생
+@NoArgsConstructor
 public class SelectedMusic {
 
     @Id
@@ -18,4 +22,8 @@ public class SelectedMusic {
     @JoinColumn(name = "album_id")
     private Album album;
 
+    public SelectedMusic(Music music, Album album) {
+        this.music = music;
+        this.album = album;
+    }
 }

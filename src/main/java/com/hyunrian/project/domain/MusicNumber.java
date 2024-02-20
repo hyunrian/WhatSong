@@ -3,9 +3,11 @@ package com.hyunrian.project.domain;
 import com.hyunrian.project.domain.enums.BrandName;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 public class MusicNumber {
 
     @Id
@@ -20,5 +22,5 @@ public class MusicNumber {
     @Enumerated(EnumType.STRING)
     private BrandName brandName;
 
-    private int number;
+    private String number;
 }

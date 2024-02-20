@@ -35,4 +35,5 @@ public class Album {
         if (isLiked) likeCount++;
         else likeCount--;
     }
+
 }
