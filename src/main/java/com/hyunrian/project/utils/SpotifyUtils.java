@@ -1,354 +1,443 @@
 package com.hyunrian.project.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hyunrian.project.domain.enums.SearchType;
-import com.hyunrian.project.domain.enums.SpotifyRequestType;
 import com.hyunrian.project.dto.*;
-import com.hyunrian.project.exception.Spotify429Error;
+import com.neovisionaries.i18n.CountryCode;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.hc.core5.http.ParseException;
-import org.springframework.http.*;
-import org.springframework.web.client.RestTemplate;
+import org.apache.hc.core5.http.*;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.SpotifyHttpManager;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
-import se.michaelthelin.spotify.model_objects.specification.Album;
-import se.michaelthelin.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
-import se.michaelthelin.spotify.requests.data.albums.GetAlbumRequest;
+import se.michaelthelin.spotify.model_objects.specification.*;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
-
-import static com.hyunrian.project.domain.enums.SpotifyURLConstants.*;
 
 @Slf4j
 public class SpotifyUtils {
 
     private static final String CLIENT_ID = "72eb6281b6c44ee2827ce0a129d9618c";
     private static final String CLIENT_SECRET = "ce81fa23cf66403b80a7d600a20822e1";
-    private static final URI URI_TOKEN = SpotifyHttpManager.makeUri("https://accounts.spotify.com/api/token");
+    private static final URI URI = SpotifyHttpManager.makeUri("https://accounts.spotify.com/api/token");
+    private static final int LIMIT = 50;
+    private static final String HEADER_NAME = "Accept-Language";
+    private static final String HEADER_VALUE = "ko-KR";
+
+    private static final SpotifyApi spotifyApi = new SpotifyApi.Builder()
+            .setClientId(CLIENT_ID)
+            .setClientSecret(CLIENT_SECRET)
+            .setRedirectUri(URI)
+            .build();
+
+    //페이징 처리 필요, 배열 인덱스 length != 0 처리 필요
 
     /**
      * 토큰 얻기(모든 요청 전 토큰이 반드시 필요함)
-     * 토큰이 만료되면 자동으로 얻도록 해야 함
+     * ExpiresIn(3600 secs)
      */
     public static String getAccessToken() throws IOException, ParseException, SpotifyWebApiException {
-        SpotifyApi spotifyApi = new SpotifyApi.Builder()
-                .setClientId(CLIENT_ID)
-                .setClientSecret(CLIENT_SECRET)
-                .setRedirectUri(URI_TOKEN)
-                .build();
-
-        ClientCredentialsRequest request = spotifyApi.clientCredentials().build();
-        ClientCredentials credentials = request.execute();
-
-        int expiresIn = credentials.getExpiresIn();
-        log.info("expiresIn={}", expiresIn);
-        if (expiresIn <= 600) {
-            spotifyApi.setAccessToken(credentials.getAccessToken());
-
-        }
 
         String accessToken = spotifyApi.getAccessToken();
-//        spotifyApi.setAccessToken(accessToken);
+        ClientCredentials credentials = spotifyApi.clientCredentials().build().execute();
 
+        if (accessToken == null) {
+            accessToken = credentials.getAccessToken();
+        }
+
+        spotifyApi.setAccessToken(accessToken);
         return accessToken;
     }
 
-    private static HttpHeaders getHeaders(String accessToken) {
-        HttpHeaders headers = new HttpHeaders();
-
-        headers.add("Authorization", "Bearer " + accessToken);;
-        headers.add("Host", "api.spotify.com");
-        headers.add("Content-type", "application/json");
-        headers.setAcceptLanguageAsLocales(Collections.singletonList(Locale.KOREAN));
-
-        return headers;
-    }
-
-    private static void apiTest() throws IOException, ParseException, SpotifyWebApiException {
-        SpotifyApi spotifyApi = new SpotifyApi.Builder()
-                .setClientId(CLIENT_ID)
-                .setClientSecret(CLIENT_SECRET)
-                .setRedirectUri(URI_TOKEN)
-                .build();
-
-        ClientCredentialsRequest request = spotifyApi.clientCredentials().build();
-        ClientCredentials credentials = request.execute();
-
-        spotifyApi.setAccessToken(credentials.getAccessToken());
-        String accessToken = spotifyApi.getAccessToken();
-
-        Album album = spotifyApi.getAlbum("7mP7AFehQDonPKEQiXvpvB").build().execute();
-        System.out.println(album.getName());
-
-    }
-
-    private static String getSearchRequestURL(SpotifyRequestType spotifyType, MusicSearchCondition condition) {
-
-        String requestURL = "";
-
-        switch (spotifyType) {
-            case SEARCH:
-                requestURL = SEARCH
-                        + QUERY + condition.getKeyword()
-                        + "&" + LIMIT + "50&";
-                SearchType searchType = condition.getSearchType();
-                if (searchType.equals(SearchType.ARTIST)) {
-                    requestURL += TYPE_ARTIST;
-                } else if (searchType.equals(SearchType.ALBUM)) {
-                    requestURL += TYPE_ALBUM;
-                } else {
-                    requestURL += TYPE_TRACK;
-                }
-                break;
-            case NEW_RELEASE:
-                requestURL = NEW_RELEASE + LIMIT + "20";
-                break;
-            case RECOMMENDATION:
-                break;
-            case ARTIST:
-                break;
-        }
-        return requestURL;
-    }
-
-    private static String getArtistRequestURL(String artistId) {
-        return ARTIST + ONE_ARTIST + artistId;
-    }
-
-    private static String getAlbumRequestURL(String albumId) {
-        return ALBUM + albumId;
-    }
-
-
-    public static List getMusicList(SpotifyRequestType spotifyType, MusicSearchCondition condition, String accessToken)
+    public static List getMusicList(MusicSearchCondition condition)
             throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
 
-        String requestURL = getSearchRequestURL(spotifyType, condition);
-        String jsonData = getJsonData(requestURL, accessToken);
-
-        return jsonToTrackList(jsonData);
-    }
-
-    private static String getJsonData(String requestURL, String accessToken)
-            throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
-
-        HttpHeaders headers = getHeaders(accessToken);
-        String body = "";
-        HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
-
-        RestTemplate template = new RestTemplate();
+        getAccessToken();
         Thread.sleep(200); //429 error 방지
-        ResponseEntity<String> response = template.exchange(requestURL, HttpMethod.GET, requestEntity, String.class);
 
-        HttpStatus httpStatus = (HttpStatus) response.getStatusCode();
-        int status = httpStatus.value(); //상태 코드가 들어갈 status 변수
-        String jsonData = response.getBody();
+        switch (condition.getSearchType()) {
+            case TRACK:
+                Track[] tracks = spotifyApi.searchTracks(condition.getKeyword())
+                        .limit(LIMIT)
+                        .setHeader(HEADER_NAME, HEADER_VALUE)
+                        .build()
+                        .execute()
+                        .getItems();
 
-        log.info("status={}", status);
+                List<SpotifySearchTrack> trackList = new ArrayList<>();
 
-        switch (status) {
-            case 401: //Unauthorized
-                getAccessToken();
-                return template.exchange(requestURL, HttpMethod.GET, requestEntity, String.class).getBody();
-            case 429: //Too Many Requests
-                int retryAfter = Integer.valueOf(response.getHeaders().getFirst("retry-after"));
-                if (retryAfter <= 10) {
-                    Thread.sleep(retryAfter * 1000);
-                    ResponseEntity<String> retryResponse =
-                            template.exchange(requestURL, HttpMethod.GET, requestEntity, String.class);
-                    if (response.getStatusCode().value() == 200) {
-                        return retryResponse.getBody();
-                    } else {
-                        log.error("Spotify API call - Retry Failed: retryAfter={}", retryAfter);
-                        throw new Spotify429Error("Retry Failed", 429);
+                for (Track track : tracks) {
+                    SpotifySearchTrack music = new SpotifySearchTrack();
+
+                    music.setTrackName(track.getName());
+                    music.setTrackId(track.getId());
+
+                    AlbumSimplified album = track.getAlbum();
+                    Image[] images = album.getImages();
+                    music.setImageUrl(images[0].getUrl());
+
+                    ArtistSimplified[] artists = track.getArtists();
+                    List<ArtistDto> artistList = new ArrayList<>();
+                    for (ArtistSimplified artist : artists) {
+                        ArtistDto artistDto = new ArtistDto();
+
+                        artistDto.setId(artist.getId());
+                        artistDto.setName(artist.getName());
+
+                        artistList.add(artistDto);
                     }
-                } else {
-                    log.error("Spotify API call - First Try Failed: retryAfter={}", retryAfter);
-                    throw new Spotify429Error("Retry Failed", 429);
+                    music.setArtistList(artistList);
+                    trackList.add(music);
                 }
+                return trackList;
+
+            case ARTIST:
+                Artist[] artists = spotifyApi.searchArtists(condition.getKeyword())
+                        .setHeader(HEADER_NAME, HEADER_VALUE)
+                        .limit(LIMIT)
+                        .build()
+                        .execute()
+                        .getItems();
+
+                List<SpotifySearchArtist> artistList = new ArrayList<>();
+                for (Artist artist : artists) {
+                    SpotifySearchArtist artistDto = new SpotifySearchArtist();
+
+                    artistDto.setId(artist.getId());
+                    artistDto.setName(artist.getName());
+                    Image[] images = artist.getImages();
+                    if (images.length != 0) {
+                        artistDto.setImageUrl(images[0].getUrl());
+                    } else {
+                        //default image
+                    }
+                    artistList.add(artistDto);
+                }
+                return artistList;
         }
-
-        return jsonData;
+        return null;
     }
 
-    public static SpotifyArtist getArtistInfo(String artistId, String accessToken) throws JsonProcessingException {
+    public static SpotifyArtist getArtistDetail(String artistId) throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
+        getAccessToken();
+        Thread.sleep(200);
 
-        HttpHeaders headers = getHeaders(accessToken);
+        Artist artist = spotifyApi.getArtist(artistId)
+                .setHeader(HEADER_NAME, HEADER_VALUE)
+                .build()
+                .execute();
 
-        String requestURL = getArtistRequestURL(artistId);
-        String body = "";
-        HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
+        SpotifyArtist spotifyArtist = new SpotifyArtist();
 
-        RestTemplate template = new RestTemplate();
-        ResponseEntity<String> response = template.exchange(requestURL, HttpMethod.GET, requestEntity, String.class);
+        //기본 정보
+        spotifyArtist.setId(artistId);
+        spotifyArtist.setName(artist.getName());
 
-        HttpStatus httpStatus = (HttpStatus) response.getStatusCode();
-        int status = httpStatus.value(); //상태 코드가 들어갈 status 변수
-        String jsonData = response.getBody();
-//        System.out.println("Response status: " + status);
+        Image[] images = artist.getImages();
+        spotifyArtist.setImageUrl(images[0].getUrl());
 
-        return jsonToArtist(jsonData);
-    }
-
-    public static SpotifyAlbum getAlbumInfo(String albumId, String accessToken) throws JsonProcessingException {
-        HttpHeaders headers = getHeaders(accessToken);
-
-        String requestURL = getAlbumRequestURL(albumId);
-        String body = "";
-        HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
-
-        RestTemplate template = new RestTemplate();
-        ResponseEntity<String> response = template.exchange(requestURL, HttpMethod.GET, requestEntity, String.class);
-
-        HttpStatus httpStatus = (HttpStatus) response.getStatusCode();
-        int status = httpStatus.value(); //상태 코드가 들어갈 status 변수
-        String jsonData = response.getBody();
-//        System.out.println("Response status: " + status);
-
-        return jsonToAlbum(jsonData);
-    }
-
-    private static List jsonToTrackList(String jsonData) throws JsonProcessingException {
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode rootNode = objectMapper.readTree(jsonData);
-
-        List<SpotifyMusic> musicList = new ArrayList<>();
-
-        JsonNode itemsNode = rootNode.get("tracks").get("items");
-
-        for (JsonNode itemNode : itemsNode) {
-            SpotifyMusic spotifyMusic = new SpotifyMusic();
-
-            //trackName
-            String trackName = itemNode.get("name").asText();
-            spotifyMusic.setTrackName(trackName);
-
-            //trackId
-            String trackId = itemNode.get("id").asText();
-            spotifyMusic.setTrackId(trackId);
-
-            //albumId
-            JsonNode albumNode = itemNode.get("album");
-            String albumId = albumNode.get("id").asText();
-            //albumName
-            String albumName = albumNode.get("name").asText();
-            spotifyMusic.setAlbum(new AlbumDto(albumId, albumName));
-
-            //albumImage
-            JsonNode imagesNodes = albumNode.get("images");
-            ArrayList<String> imagesList = new ArrayList<>();
-            for (JsonNode imageNode : imagesNodes) {
-                imagesList.add(imageNode.get("url").asText());
-            }
-            spotifyMusic.setImageUrl(imagesList);
-
-            //releaseDate
-            String releaseDate = albumNode.get("release_date").asText();
-            spotifyMusic.setReleaseDate(releaseDate);
-
-            //artistId, artistName(items -> artists)
-            JsonNode artistsNode = itemNode.get("artists");
-
-            List<ArtistDto> artistList = new ArrayList<>();
-
-            for (JsonNode artist : artistsNode) {
-                artistList.add(new ArtistDto(artist.get("name").asText(), artist.get("id").asText()));
-            }
-            spotifyMusic.setArtistList(artistList);
-
-            //artistId, artistName(items -> album -> artists)
-//            JsonNode artistsNode = albumNode.get("artists");
-//            List<String> artistNameList = new ArrayList<>();
-//            List<String> artistIdList = new ArrayList<>();
-//            for (JsonNode artist : artistsNode) {
-//                artistNameList.add(artist.get("name").textValue());
-//                artistIdList.add(artist.get("id").textValue());
-//            }
-
-            musicList.add(spotifyMusic);
-        }
-
-        return musicList;
-    }
-
-    private static SpotifyArtist jsonToArtist(String jsonData) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode rootNode = objectMapper.readTree(jsonData);
-
-        SpotifyArtist artist = new SpotifyArtist();
-
-        String name = rootNode.get("name").asText();
-        artist.setName(name);
-
-        JsonNode imagesNode = rootNode.get("images");
-        for (JsonNode images : imagesNode) {
-            String url = images.get("url").asText();
-            artist.setImageUrl(url);
-        }
-
-        String popularity = rootNode.get("popularity").asText();
-        artist.setPopularity(popularity);
-
-        JsonNode genresNode = rootNode.get("genres");
+        String[] genres = artist.getGenres();
         List<String> genreList = new ArrayList<>();
-        for (JsonNode genres : genresNode) {
-            String genre = genres.asText();
+        for (String genre : genres) {
             genreList.add(genre);
         }
-        artist.setGenreList(genreList);
+        spotifyArtist.setGenreList(genreList);
 
-        String id = rootNode.get("id").asText();
-        artist.setId(id);
+        //top5 음악
+        spotifyArtist.setTopTrackList(getTopTracks(artistId));
 
-        return artist;
+        //연관 아티스트
+        spotifyArtist.setRelatedArtistList(getRelatedArtist(artistId));
+
+        //아티스트의 앨범
+        spotifyArtist.setArtistAlbumList(getArtistAlbum(artistId));
+
+        return spotifyArtist;
     }
 
-    private static SpotifyAlbum jsonToAlbum(String jsonData) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode rootNode = objectMapper.readTree(jsonData);
+    public static SpotifyMusic getMusicDetail(String trackId) throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
+        getAccessToken();
+        Thread.sleep(200);
 
-        SpotifyAlbum album = new SpotifyAlbum();
+        Track track = spotifyApi.getTrack(trackId)
+                .setHeader(HEADER_NAME, HEADER_VALUE)
+                .build()
+                .execute();
 
-        String id = rootNode.get("id").asText();
-        album.setId(id);
+        SpotifyMusic music = new SpotifyMusic();
 
-        String imageUrl = rootNode.get("images").get(0).get("url").asText();
-        album.setImageUrl(imageUrl);
+        music.setTrackId(trackId);
+        music.setTrackName(track.getName());
 
-        String name = rootNode.get("name").asText();
-        album.setName(name);
+        AlbumSimplified album = track.getAlbum();
+        AlbumDto albumDto = new AlbumDto();
+        albumDto.setId(album.getId());
+        Image[] images = album.getImages();
+        albumDto.setImageUrl(images[0].getUrl());
+        albumDto.setName(album.getName());
+        music.setAlbum(albumDto);
+        music.setReleaseDate(album.getReleaseDate());
 
-        String releaseDate = rootNode.get("release_date").asText();
-        album.setReleaseDate(releaseDate);
-
-        JsonNode artistsNode = rootNode.get("artists");
+        ArtistSimplified[] artists = track.getArtists();
         List<ArtistDto> artistList = new ArrayList<>();
-        for (JsonNode artist : artistsNode) {
-            String artistId = artist.get("id").asText();
-            String artistName = artist.get("name").asText();
-            artistList.add(new ArtistDto(artistId, artistName));
-        }
-        album.setArtistList(artistList);
+        for (ArtistSimplified artist : artists) {
+            ArtistDto artistDto = new ArtistDto();
 
-        JsonNode itemsNode = rootNode.get("tracks").get("items");
-        List<TrackDto> trackList = new ArrayList<>();
-        for (JsonNode item : itemsNode) {
-            String trackId = item.get("id").asText();
-            String trackName = item.get("name").asText();
-            String trackNumber = item.get("track_number").asText();
-            trackList.add(new TrackDto(trackId, trackName, trackNumber));
-        }
-        album.setTrackList(trackList);
+            artistDto.setId(artist.getId());
+            artistDto.setName(artist.getName());
 
-        return album;
+            artistList.add(artistDto);
+        }
+        music.setArtistList(artistList);
+
+        //현재 트랙과 비슷한 노래 추천
+        music.setRelatedTrackList(getRelatedTrackList(trackId));
+
+        //아티스트의 인기곡
+        music.setTopTrackList(getTopTracks(artists[0].getId()));
+
+        return music;
     }
 
+    public static SpotifyAlbum getAlbumDetail(String albumId) throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
+        getAccessToken();
+        Thread.sleep(200);
+
+        Album album = spotifyApi.getAlbum(albumId)
+                .setHeader(HEADER_NAME, HEADER_VALUE)
+                .build()
+                .execute();
+
+        SpotifyAlbum spotifyAlbum = new SpotifyAlbum();
+
+        spotifyAlbum.setId(albumId);
+        spotifyAlbum.setName(album.getName());
+        Image[] images = album.getImages();
+        spotifyAlbum.setImageUrl(images[0].getUrl());
+        spotifyAlbum.setReleaseDate(album.getReleaseDate());
+
+        TrackSimplified[] tracks = album.getTracks().getItems();
+        List<TrackDto> trackList = new ArrayList<>();
+        for (TrackSimplified track : tracks) {
+            TrackDto trackDto = new TrackDto();
+            trackDto.setId(track.getId());
+            trackDto.setName(track.getName());
+            trackDto.setTrackNumber(track.getTrackNumber());
+            trackList.add(trackDto);
+        }
+        spotifyAlbum.setTrackList(trackList);
+
+        ArtistSimplified[] artists = album.getArtists();
+        List<ArtistDto> artistList = new ArrayList<>();
+        for (ArtistSimplified artist : artists) {
+            ArtistDto artistDto = new ArtistDto();
+            artistDto.setId(artist.getId());
+            artistDto.setName(artist.getName());
+            artistDto.setHref(artist.getHref());
+            artistList.add(artistDto);
+        }
+        spotifyAlbum.setArtistList(artistList);
+
+        //아티스트의 다른 앨범
+        spotifyAlbum.setAlbumList(getArtistAlbum(artistList.get(0).getId()));
+
+        return spotifyAlbum;
+    }
+
+    public static List<SpotifyNewRelease> getNewReleaseAlbum() throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
+        getAccessToken();
+        Thread.sleep(200);
+
+        Paging<AlbumSimplified> paging = spotifyApi.getListOfNewReleases()
+                .setHeader(HEADER_NAME, HEADER_VALUE)
+                .limit(LIMIT)
+                .build()
+                .execute();
+
+        AlbumSimplified[] albums = paging.getItems();
+        List<SpotifyNewRelease> list = new ArrayList<>();
+
+        for (AlbumSimplified album : albums) {
+            SpotifyNewRelease newAlbum = new SpotifyNewRelease();
+
+            newAlbum.setAlbumId(album.getId());
+            newAlbum.setAlbumName(album.getName());
+            newAlbum.setHref(album.getHref());
+
+            Image[] images = album.getImages();
+            newAlbum.setImageUrl(images[0].getUrl());
+
+            ArtistSimplified[] artists = album.getArtists();
+            List<ArtistDto> artistList = new ArrayList<>();
+            for (ArtistSimplified artist : artists) {
+                ArtistDto artistDto = new ArtistDto();
+                artistDto.setId(artist.getId());
+                artistDto.setName(artist.getName());
+                artistList.add(artistDto);
+            }
+            newAlbum.setArtistList(artistList);
+
+            list.add(newAlbum);
+        }
+
+        return list;
+    }
+
+    public static List<SpotifySearchTrack> getGenreTracks() {
+        return null;
+    }
+
+    public static List<SpotifySearchTrack> getRecommendation(String genres, String tracks) throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
+        getAccessToken();
+        Thread.sleep(200);
+
+        Recommendations reco = spotifyApi.getRecommendations()
+                .setHeader(HEADER_NAME, HEADER_VALUE)
+//                .seed_genres(genres)
+//                .min_acousticness(0.9F)
+//                .min_energy(0.9F)
+                .seed_tracks(tracks)
+//                .min_popularity(70)
+                .limit(LIMIT)
+                .build()
+                .execute();
+
+        List<SpotifySearchTrack> list = new ArrayList<>();
+
+        Track[] trackArr = reco.getTracks();
+        for (Track track : trackArr) {
+            SpotifySearchTrack trackDto = new SpotifySearchTrack();
+            trackDto.setTrackId(track.getId());
+            trackDto.setTrackName(track.getName());
+
+            Image[] images = track.getAlbum().getImages();
+            if (images.length != 0) {
+                trackDto.setImageUrl(images[0].getUrl());
+            } else {
+                //default image url
+            }
+
+            ArtistSimplified[] artists = track.getArtists();
+            List<ArtistDto> artistList = new ArrayList<>();
+            for (ArtistSimplified artist : artists) {
+                ArtistDto artistDto = new ArtistDto();
+                artistDto.setId(artist.getId());
+                artistDto.setName(artist.getName());
+                artistList.add(artistDto);
+            }
+            trackDto.setArtistList(artistList);
+
+            list.add(trackDto);
+        }
+        return list;
+    }
+
+    public static List<String> getGenreSeeds() throws IOException, ParseException, SpotifyWebApiException {
+        getAccessToken();
+
+        String[] genres = spotifyApi.getAvailableGenreSeeds()
+                .build()
+                .execute();
+
+        List<String> genreList = new ArrayList<>();
+        for (String genre : genres) {
+            genreList.add(genre);
+        }
+        return genreList;
+    }
+
+    private static List<TrackDto> getTopTracks(String artistId) throws IOException, ParseException, SpotifyWebApiException {
+        getAccessToken();
+        Track[] tracks = spotifyApi.getArtistsTopTracks(artistId, CountryCode.KR)
+                .setHeader(HEADER_NAME, HEADER_VALUE)
+                .build()
+                .execute();
+
+        List<TrackDto> list = new ArrayList<>();
+
+        for (Track track : tracks) {
+            TrackDto trackDto = new TrackDto();
+            trackDto.setId(track.getId());
+            trackDto.setName(track.getName());
+
+            list.add(trackDto);
+        }
+        return list;
+    }
+
+    private static List<AlbumDto> getArtistAlbum(String artistId) throws IOException, ParseException, SpotifyWebApiException {
+        getAccessToken();
+
+        Paging<AlbumSimplified> paging = spotifyApi.getArtistsAlbums(artistId)
+                .setHeader(HEADER_NAME, HEADER_VALUE)
+                .limit(LIMIT)
+                .build()
+                .execute();
+
+        AlbumSimplified[] albums = paging.getItems();
+
+        List<AlbumDto> list = new ArrayList<>();
+
+        for (AlbumSimplified album : albums) {
+            AlbumDto albumDto = new AlbumDto();
+
+            albumDto.setId(album.getId());
+            albumDto.setName(album.getName());
+            albumDto.setReleaseDate(album.getReleaseDate());
+            Image[] images = album.getImages();
+            albumDto.setImageUrl(images[0].getUrl());
+
+            list.add(albumDto);
+        }
+
+        return list;
+    }
+
+    private static List<ArtistDto> getRelatedArtist(String artistId) throws IOException, ParseException, SpotifyWebApiException {
+        getAccessToken();
+
+        Artist[] artists = spotifyApi.getArtistsRelatedArtists(artistId)
+                .setHeader(HEADER_NAME, HEADER_VALUE)
+                .build()
+                .execute();
+
+        List<ArtistDto> list = new ArrayList<>();
+
+        for (Artist artist : artists) {
+            ArtistDto artistDto = new ArtistDto();
+
+            artistDto.setId(artist.getId());
+            artistDto.setName(artist.getName());
+            Image[] images = artist.getImages();
+            artistDto.setImageUrl(images[0].getUrl());
+
+            list.add(artistDto);
+        }
+        return list;
+    }
+
+    private static List<RelatedTrackDto> getRelatedTrackList(String trackId) throws IOException, SpotifyWebApiException, ParseException {
+        Recommendations related = spotifyApi.getRecommendations()
+                .setHeader(HEADER_NAME, HEADER_VALUE)
+                .seed_tracks(trackId)
+                .build()
+                .execute();
+
+        Track[] tracks = related.getTracks();
+        List<RelatedTrackDto> relatedTrackList = new ArrayList<>();
+        for (Track relatedTrack : tracks) {
+            RelatedTrackDto trackDto = new RelatedTrackDto();
+
+            trackDto.setTrackId(relatedTrack.getId());
+            trackDto.setTrackName(relatedTrack.getName());
+            Image[] albumImages = relatedTrack.getAlbum().getImages();
+            trackDto.setImageUrl(albumImages[0].getUrl());
+            trackDto.setArtistId(relatedTrack.getId());
+            trackDto.setArtistName(relatedTrack.getName());
+
+            relatedTrackList.add(trackDto);
+        }
+        return relatedTrackList;
+    }
 
 }

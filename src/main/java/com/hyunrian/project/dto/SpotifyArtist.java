@@ -16,4 +16,8 @@ public class SpotifyArtist {
     private String popularity;
     private String imageUrl;
     private List<String> genreList;
+
+    private List<TrackDto> topTrackList;
+    private List<ArtistDto> relatedArtistList;
+    private List<AlbumDto> artistAlbumList;
 }

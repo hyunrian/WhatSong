@@ -9,22 +9,18 @@
 <table>
     <thead> <tr>
         <th>이미지</th>
-        <th>아티스트ID</th>
         <th>아티스트명</th>
-        <th>인기도</th>
-        <th>장르</th>
     </tr>
     </thead>
     <tbody>
-    <tr>
+    <tr th:each="artist : ${list}">
         <td>
             <img th:src="${artist.imageUrl}">
         </td>
-        <td th:text="${artist.id}"></td>
-        <td th:text="${artist.name}"></td>
-        <td th:text="${artist.popularity}"></td>
-        <td th:each="genre : ${artist.genreList}" >
-            <span th:text="${genre}"></span>
+        <td>
+            <a th:href="@{/music/artist/{artistId} (artistId=${artist.id})}"
+               th:text="${artist.name}">
+            </a>
         </td>
     </tr>
     </tbody>

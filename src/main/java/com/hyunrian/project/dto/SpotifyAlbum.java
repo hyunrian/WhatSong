@@ -13,4 +13,5 @@ public class SpotifyAlbum {
     private String releaseDate;
     private List<ArtistDto> artistList;
     private List<TrackDto> trackList;
+    private List<AlbumDto> albumList;
 }

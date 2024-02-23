@@ -10,4 +10,6 @@ import lombok.NoArgsConstructor;
 public class ArtistDto {
     private String name;
     private String id;
+    private String imageUrl;
+    private String href;
 }

@@ -14,11 +14,12 @@ public class SpotifyMusic {
     private String trackName;
     private String trackId;
     private String releaseDate;
-    private List<String> imageUrl;
+    private String imageUrl;
 
     private AlbumDto album;
-
     private List<ArtistDto> artistList;
-//    private String artistImage;
+
+    private List<RelatedTrackDto> relatedTrackList;
+    private List<TrackDto> topTrackList;
 
 }

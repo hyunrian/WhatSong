@@ -7,31 +7,9 @@
 <style>
 </style>
 <body>
-<h1>노래 검색</h1>
-    <form action="/music/search/result">
-        <select name="brandName">
-            <option value="TJ">TJ</option>
-            <option value="KUMYOUNG">금영</option>
-        </select><br>
-        <select name="searchType">
-            <option value="singer">가수</option>
-            <option value="title">제목</option>
-        </select>
-        <input type="text" name="keyword">
-        <button type="submit">검색</button>
-    </form>
-
-<h1>최신곡 조회</h1>
-<form action="/music/new">
-    <select name="brandName">
-        <option value="TJ">TJ</option>
-        <option value="KUMYOUNG">금영</option>
-    </select><br>
-    <button type="submit">보러가기</button>
-</form>
 
 <h1>스포티파이 검색</h1>
-<form action="/music/spotify">
+<form action="/music/search">
     <input type="hidden" name="spotifyRequestType" value="SEARCH">
     <select name="searchType">
         <option value="TRACK">트랙</option>
@@ -42,5 +20,9 @@
     <button type="submit">보러가기</button>
 </form>
 
+<h1>최신곡 조회</h1>
+<form action="/music/new">
+    <button type="submit">보러가기</button>
+</form>
 </body>
 </html>
