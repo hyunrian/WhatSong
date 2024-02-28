@@ -1,5 +1,5 @@
 package com.hyunrian.project.domain.enums;
 
-public enum BrandName {
-    TJ, KUMYOUNG
+public enum MemberStatus {
+    AUTH, UNAUTH;
 }

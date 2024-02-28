@@ -1,7 +1,7 @@
 package com.hyunrian.project.domain;
 
-import com.hyunrian.project.domain.enums.BrandName;
 import com.hyunrian.project.domain.enums.Gender;
+import com.hyunrian.project.domain.enums.MemberStatus;
 import com.hyunrian.project.dto.MemberJoinDto;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,8 +9,6 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.hyunrian.project.domain.enums.BrandName.*;
 
 @Entity
 @Getter
@@ -22,10 +20,10 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
-//    @Column(unique = true, length = 80)
+    @Column(unique = true, length = 80)
     private String email;
 
-//    @Column(unique = true, length = 30)
+    @Column(unique = true, length = 30)
     private String nickname;
 
     @Column(length = 30)
@@ -35,12 +33,14 @@ public class Member {
     private Gender gender;
 
     @Column(length = 3)
-    private int age;
+    private int birthYear;
 
     private String imagePath;
 
-    @Enumerated(value = EnumType.STRING)
-    private BrandName brandName;
+    @Enumerated(EnumType.STRING)
+    private MemberStatus status = MemberStatus.UNAUTH;
+
+    private String token;
 
     @Column()
     private LocalDateTime joinedDate = LocalDateTime.now();
@@ -58,8 +58,17 @@ public class Member {
         this.nickname = joinDto.getNickname();
         this.password = joinDto.getPassword();
         this.gender = joinDto.getGender();
-        this.age = joinDto.getAge();
+        this.birthYear = joinDto.getBirthYear();
+        this.token = joinDto.getToken();
         return this;
+    }
+
+    public void updateStatus() {
+        this.status = MemberStatus.AUTH;
+    }
+
+    public void updateToken(String token) {
+        this.token = token;
     }
 
     //개인정보 업데이트
@@ -69,15 +78,9 @@ public class Member {
         if (imagePath != null) this.imagePath = imagePath;
     }
 
-    //노래방 브랜드 변경
-    public void updateMusicBrand(BrandName brand) {
-        switch (brand) {
-            case TJ:
-                this.brandName = TJ;
-                break;
-            case KUMYOUNG:
-                this.brandName = KUMYOUNG;
-        }
+    //임시 비밀번호로 변경
+    public void changePwToTemp(String temp) {
+        this.password = temp;
     }
 
 }

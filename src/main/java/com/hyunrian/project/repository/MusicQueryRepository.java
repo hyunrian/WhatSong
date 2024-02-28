@@ -1,9 +1,6 @@
 package com.hyunrian.project.repository;
 
 import com.hyunrian.project.domain.*;
-import com.hyunrian.project.domain.enums.BrandName;
-import com.hyunrian.project.dto.MusicInAlbumDto;
-import com.hyunrian.project.dto.MusicAndAlbumInfo;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -14,7 +11,6 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 
 import static com.hyunrian.project.domain.QMusic.*;
-import static com.hyunrian.project.domain.QMusicNumber.*;
 import static com.hyunrian.project.domain.QSelectedMusic.*;
 
 @Repository
@@ -28,7 +24,7 @@ public class MusicQueryRepository {
         this.memberRepository = memberRepository;
     }
 
-    public List<MusicAndAlbumInfo> findAll(MusicInAlbumDto musicInAlbumDto) {
+ /*   public List<MusicAndAlbumInfo> findAll(MusicInAlbumDto musicInAlbumDto) {
 
         BrandName brandName = musicInAlbumDto.getBrandName();
         Album album = musicInAlbumDto.getAlbum();
@@ -52,7 +48,7 @@ public class MusicQueryRepository {
                         selectedMusic.album.eq(album))
                 .fetch();
     }
-
+*/
     private BooleanExpression likeSinger(String singer) {
         if (StringUtils.hasText(singer)) {
             return music.singer.like("%" + singer + "%");

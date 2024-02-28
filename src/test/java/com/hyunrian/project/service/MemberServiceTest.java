@@ -4,26 +4,29 @@ import com.hyunrian.project.domain.Member;
 import com.hyunrian.project.domain.enums.Gender;
 import com.hyunrian.project.dto.MemberJoinDto;
 import com.hyunrian.project.dto.MemberUpdateDto;
-import org.assertj.core.api.Assertions;
+import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.UnsupportedEncodingException;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Transactional
 class MemberServiceTest {
 
     @Autowired
     MemberService memberService;
 
     @Test
-    void save() {
+    void save() throws MessagingException, UnsupportedEncodingException {
         MemberJoinDto joinDto = new MemberJoinDto();
         joinDto.setNickname("tester");
         joinDto.setPassword("123");
-        joinDto.setAge(20);
+        joinDto.setBirthYear(2000);
         joinDto.setGender(Gender.FEMALE);
         joinDto.setEmail("aaa");
 
@@ -32,12 +35,12 @@ class MemberServiceTest {
         assertThat(savedMember.getNickname()).isEqualTo(joinDto.getNickname());
         assertThat(savedMember.getPassword()).isEqualTo(joinDto.getPassword());
         assertThat(savedMember.getEmail()).isEqualTo(joinDto.getEmail());
-        assertThat(savedMember.getAge()).isEqualTo(joinDto.getAge());
+        assertThat(savedMember.getBirthYear()).isEqualTo(joinDto.getBirthYear());
         assertThat(savedMember.getGender()).isEqualTo(joinDto.getGender());
     }
 
     @Test
-    void update() {
+    void update() throws MessagingException, UnsupportedEncodingException {
         Long id = getSavedMember().getId();
         MemberUpdateDto updateDto = new MemberUpdateDto();
         updateDto.setNickname("updateTest");
@@ -51,7 +54,7 @@ class MemberServiceTest {
     }
 
     @Test
-    void delete() {
+    void delete() throws MessagingException, UnsupportedEncodingException {
         Long id = getSavedMember().getId();
         Member savedMember = memberService.findById(id).orElse(null);
         assertThat(savedMember).isNotNull();
@@ -62,14 +65,25 @@ class MemberServiceTest {
         assertThat(deletedMember).isNull();
     }
 
-    Member getSavedMember() {
+    @Test
+    void findByEmail() throws MessagingException, UnsupportedEncodingException {
+        Member savedMember = getSavedMember();
+        String email = savedMember.getEmail();
+
+        Member member = memberService.findByEmail(email).orElse(null);
+
+        assertThat(savedMember.getId()).isEqualTo(member.getId());
+    }
+
+    Member getSavedMember() throws MessagingException, UnsupportedEncodingException {
         MemberJoinDto joinDto = new MemberJoinDto();
         joinDto.setNickname("tester");
         joinDto.setPassword("123");
-        joinDto.setAge(20);
+        joinDto.setBirthYear(2000);
         joinDto.setGender(Gender.FEMALE);
         joinDto.setEmail("aaa");
 
         return memberService.save(joinDto);
     }
+
 }

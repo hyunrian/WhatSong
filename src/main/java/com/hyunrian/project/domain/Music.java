@@ -28,9 +28,6 @@ public class Music {
     private String lyricist;
     private String release;
 
-    @OneToMany(mappedBy = "music")
-    private List<MusicNumber> musicNumber = new ArrayList<>();
-
 //    private LocalDateTime savedDate;
     private int likeCount;
 

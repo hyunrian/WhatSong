@@ -17,17 +17,17 @@ public class SpotifyService {
     /**
      * 검색
      */
-    public List getSearchResult(MusicSearchCondition condition)
+    public List getSearchResult(MusicSearchCondition condition, int page)
             throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
 
-        return SpotifyUtils.getMusicList(condition);
+        return SpotifyUtils.getMusicList(condition, page);
     }
 
     /**
      * 아티스트 정보
      */
-    public SpotifyArtist getArtistInfo(String artistId) throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
-        return SpotifyUtils.getArtistDetail(artistId);
+    public SpotifyArtist getArtistInfo(String artistId, int albumPage) throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
+        return SpotifyUtils.getArtistDetail(artistId, albumPage);
     }
 
     /**
@@ -40,15 +40,15 @@ public class SpotifyService {
     /**
      * 앨범 정보
      */
-    public SpotifyAlbum getAlbumInfo(String albumId) throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
-        return SpotifyUtils.getAlbumDetail(albumId);
+    public SpotifyAlbum getAlbumInfo(String albumId, int albumPage) throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
+        return SpotifyUtils.getAlbumDetail(albumId, albumPage);
     }
 
     /**
      * 최신앨범
      */
-    public List<SpotifyNewRelease> getNewReleaseAlbum() throws IOException, ParseException, InterruptedException, SpotifyWebApiException {
-        return SpotifyUtils.getNewReleaseAlbum();
+    public List<SpotifyNewRelease> getNewReleaseAlbum(int page) throws IOException, ParseException, InterruptedException, SpotifyWebApiException {
+        return SpotifyUtils.getNewReleaseAlbum(page);
     }
 
 }

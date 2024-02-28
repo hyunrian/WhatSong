@@ -1,0 +1,135 @@
+<!DOCTYPE HTML>
+<html th:replace="~{template/layout/baseWithoutLogo :: layout (~{::title}, ~{::style}, ~{::body})}"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>WhatSong - Congrats!</title>
+<style>
+html {
+	max-width: 100%;
+	min-height: 100%;
+}
+body {
+	min-height: 100%;
+	margin: 0;
+}
+#wrapper {
+	min-height: 100%;
+	width: 500px;
+}
+#testDiv {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+#textDiv {
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+#email {
+    font-size: 1.5vw;
+    padding-top: 2vw;
+    border-bottom: dotted 1px;
+}
+#content {
+    font-size: 1.3vw;
+    padding-top: 2vw;
+    padding-bottom: 3vw;
+}
+#emailImg {
+    width:8vw;
+}
+#bottomTxt {
+    padding-top: 3vw;
+    padding-bottom: 1vw;
+}
+#resendBtn {
+	background-color: #151c20;
+	box-shadow: none;
+}
+</style>
+</head>
+<body class="is-preload">
+<!-- toastr 추가 -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css"
+      integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g=="
+      crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script
+        src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script
+        src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"
+        integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+toastr.options = {
+	"closeButton": false,
+	"debug": false,
+	"newestOnTop": false,
+	"positionClass": "toast-bottom-right",
+	"preventDuplicates": false,
+	"onclick": null,
+	"showDuration": "400",
+	"hideDuration": "400",
+	"timeOut": "3000",
+	"extendedTimeOut": "1200",
+	"showEasing": "swing",
+	"hideEasing": "linear",
+	"showMethod": "fadeIn",
+	"hideMethod": "fadeOut"
+}
+</script>
+<script>
+$(document).ready(function() {
+    $("#resendBtn").click(function() {
+    let email = $("#email").text();
+        $.ajax({
+          type: "POST",
+          url: "/resend",
+          data: {mailType : "JOIN", email : email},
+          success: function(response) {
+
+            if (response) {
+              toastr.info("메일이 재발송되었습니다.");
+            }
+          }
+        });
+    });
+});
+</script>
+<a href="/" style="border-bottom: none;">
+    <img src="images/logo5.png" style="width:200px; padding-left: 20px; padding-top: 10px;">
+</a>
+<div id="wrapper">
+    <div id="testDiv" class="container">
+        <section>
+            <div class="box alt">
+                <div class="row gtr-uniform">
+                    <div class="col-12" id="textDiv">
+                        <h1>이메일 인증</h1>
+                        <div th:text="${email}" class="text" id="email"></div>
+                        <div class="text" id="content">
+                            위의 주소로 인증메일이 발송되었습니다.<br>
+                            받으신 메일을 열어 버튼을 클릭하면 가입이 완료됩니다.
+                        </div>
+                        <div>
+                            <img src="images/email.png" id="emailImg">
+                        </div>
+                        <div id="bottomTxt">
+                            메일을 받지 못하셨나요?
+                        </div>
+                        <div>
+                            <button id="resendBtn">인증 메일 재발송</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>

@@ -31,10 +31,10 @@ public class SpotifyController {
 
     //spotify - search (예외 처리)
     @GetMapping("/search")
-    public String viewSearchResult(MusicSearchCondition condition, Model model)
+    public String viewSearchResult(MusicSearchCondition condition, int page, Model model)
             throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
 
-        List list = spotifyService.getSearchResult(condition);
+        List list = spotifyService.getSearchResult(condition, page);
 
         if (list != null) {
             model.addAttribute("list", list);
@@ -58,22 +58,22 @@ public class SpotifyController {
 
 
     @GetMapping("/artist/{artistId}")
-    public String viewArtistInfo(@PathVariable String artistId, Model model) throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
-        SpotifyArtist artist = spotifyService.getArtistInfo(artistId);
+    public String viewArtistInfo(@PathVariable String artistId, int albumPage, Model model) throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
+        SpotifyArtist artist = spotifyService.getArtistInfo(artistId, albumPage);
         model.addAttribute("artist", artist);
         return "main/search/testArtistDetail";
     }
 
     @GetMapping("/album/{albumId}")
-    public String viewAlbumInfo(@PathVariable String albumId, Model model) throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
-        SpotifyAlbum album = spotifyService.getAlbumInfo(albumId);
+    public String viewAlbumInfo(@PathVariable String albumId, int albumPage, Model model) throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
+        SpotifyAlbum album = spotifyService.getAlbumInfo(albumId, albumPage);
         model.addAttribute("album", album);
         return "main/search/testAlbum";
     }
 
     @GetMapping("/new")
-    public String viewNewRelease(Model model) throws IOException, ParseException, InterruptedException, SpotifyWebApiException {
-        List<SpotifyNewRelease> list = spotifyService.getNewReleaseAlbum();
+    public String viewNewRelease(int page, Model model) throws IOException, ParseException, InterruptedException, SpotifyWebApiException {
+        List<SpotifyNewRelease> list = spotifyService.getNewReleaseAlbum(page);
         model.addAttribute("list", list);
         return "main/search/testNew";
     }

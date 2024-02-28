@@ -48,6 +48,12 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 
+	//mail 인증
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	implementation 'org.springframework:spring-context'
+	implementation 'org.springframework:spring-context-support'
+	implementation 'com.sun.mail:jakarta.mail:2.1.2'
+
 	//test에서 lombok 사용
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'

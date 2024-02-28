@@ -192,4 +192,5 @@ gradlew.bat
 *.gradle
 !build.gradle
 !gradle/wrapper/gradle-wrapper.jar
-resources/static/images/
+**/resources/static/images/
+**/mailAuth.properties

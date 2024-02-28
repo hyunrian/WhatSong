@@ -1,6 +1,5 @@
 package com.hyunrian.project.dto;
 
-import com.hyunrian.project.domain.enums.BrandName;
 import com.hyunrian.project.domain.enums.SearchType;
 import lombok.Getter;
 import lombok.Setter;

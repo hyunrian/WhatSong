@@ -1,84 +1,252 @@
 <!DOCTYPE html>
-<html lang="en">
+<html th:replace="~{template/layout/baseWithoutLogo :: layout (~{::title}, ~{::style}, ~{::body})}"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>WhatSong</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/main.css" />
+<title>WhatSong - Join</title>
+<style>
+    html {
+        max-width: 100%;
+        min-height: 100%;
+    }
+    #wrapper {
+        width: 30em;
+        padding-bottom: 4vw;
+    }
+    .innerDiv {
+        padding-top: 0.5em !important;
+    }
+    .midDiv {
+        padding-top: 2vw !important;
+    }
+    .buttonDiv {
+        padding-top: 5vw !important;
+    }
+    #loginBtn {
+        float: right;
+        margin-top: 20px;
+        margin-right: 20px;
+    }
+    .checkBtn {
+        min-width: 0;
+    }
+    .field-error {
+        border-color: #dc3545;
+        color: #dc3545;
+    }
+    p.field-error {
+        padding-top: 7px !important;
+        padding-left: 2em;
+        font-size: 13pt;
+    }
+    .field-check {
+        padding-top: 7px !important;
+        padding-left: 2em;
+        font-size: 13pt;
+        color: #3938da;
+    }
+
+</style>
 </head>
 <body>
-<div id="wrapper">
-  <header id="header">
-    <h1>회원가입</h1>
-  </header>
-  <div id="main">
-    <section id="content" class="main">
-      <section>
-        <form method="post" action="#">
-          <h2></h2>
-          <div class="row gtr-uniform">
-            <div class="col-12">
-              <input type="text" name="demo-name" id="demo-name" value="" placeholder="닉네임(2자 이상 15자 이하)" />
-            </div>
-            <div class="col-12">
-              <input type="email" name="demo-email" id="demo-email" value="" placeholder="이메일(example@gmail.com)" />
-            </div>
-            <div class="col-12">
-              <input type="password" name="demo-email" id="demo-password" value="" placeholder="비밀번호(영문, 숫자 조합 8자 이상 15자 이하)" />
-            </div><br><br><br><br>
-            <div class="col-4 col-12-small">
-              <h3>성별</h3>
-            </div>
-            <div class="col-4 col-12-small">
-              <input type="radio" id="female" name="gender" checked>
-              <label for="female">여성</label>
-            </div>
-            <div class="col-4 col-12-small">
-              <input type="radio" id="male" name="gender">
-              <label for="male">남성</label>
-            </div>
-            <div class="col-4 col-12-small">
-              <h3>연령</h3>
-            </div>
-            <div class="col-8 col-12-small">
-              <select name="demo-category" id="demo-category">
-                <option value="1">Manufacturing</option>
-                <option value="1">Shipping</option>
-                <option value="1">Administration</option>
-                <option value="1">Human Resources</option>
-              </select>
-            </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
 
-            <div class="col-12">
-              <input type="checkbox" id="demo-copy" name="demo-copy">
-              <label for="demo-copy">개인정보 수집 및 이용 동의</label>
-            </div>
-            <div>
-              <a href="#" class="button fit">가입하기</a>
-            </div>
-          </div>
-        </form>
-      </section>
-    </section>
+  //닉네임 중복확인 버튼 활성화
+  document.getElementById("nickname").addEventListener("input", function() {
+      let checkBtn = document.getElementById("nicknameBtn");
 
-  </div>
+      if (checkNickname()) {
+          checkBtn.disabled = false;
+      } else {
+          checkBtn.disabled = true;
+      }
+      checkValidation();
 
+  });
+
+  //이메일 중복확인 버튼 활성화
+  document.getElementById("email").addEventListener("input", function() {
+      let checkBtn = document.getElementById("emailBtn");
+
+      if (checkEmail()) {
+          checkBtn.disabled = false;
+      } else {
+          checkBtn.disabled = true;
+      }
+      checkValidation();
+  });
+
+  //사용가능 패스워드 알림
+  document.getElementById("password").addEventListener("input", function() {
+
+      if (checkPassword()) {
+          $("#passwordTxt").show();
+          $("#passwordTxt").text("사용 가능한 비밀번호입니다.");
+          $("#passwordErr").hide();
+      } else {
+          $("#passwordTxt").hide();
+      }
+      checkValidation();
+  });
+
+});
+
+function checkValidation() {
+    let submitBtn = document.getElementById("submitBtn");
+
+    if (checkNickname() && checkEmail() && checkPassword()) {
+        submitBtn.disabled = false;
+    } else {
+        submitBtn.disabled = true;
+    }
+}
+
+function checkNickname() {
+    let nickname = document.getElementById("nickname").value.trim();
+    if (2 <= nickname.length && nickname.length <= 12) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function checkEmail() {
+    let email = document.getElementById("email").value.trim();
+    let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailPattern.test(email);
+}
+
+function checkPassword() {
+    let password = document.getElementById("password").value.trim();
+    let passwordPattern = /^(?=.*[A-Za-z])(?=.*\d).{8,15}$/;
+    return passwordPattern.test(password);
+}
+
+//중복확인 비동기 요청
+$(document).ready(function() {
+    $(".checkBtn").click(function() {
+        let data = $(this).parent().prev().find("input").val();
+        let name = $(this).parent().prev().find("input").prop("name");
+
+        let input = $(this).parent().next();
+        let nicknameTxt = $("#nicknameTxt");
+        let emailTxt = $("#emailTxt");
+
+        $.ajax({
+          type: "POST",
+          url: "/checkDup",
+          data: {data : data, name : name},
+          success: function(response) {
+
+            if (response) { //존재하는 경우
+              if (name == "nickname") {
+                nicknameTxt.text("이미 사용중인 닉네임입니다.");
+                nicknameTxt.css("color", "#dc3545");
+                $("#nicknameErr").hide();
+              } else {
+              console.log("email!")
+                emailTxt.text("이미 등록된 이메일입니다.");
+                emailTxt.css("color", "#dc3545");
+                $("#emailErr").hide();
+              }
+
+            } else { //존재하지 않는 경우
+              if (name == "nickname") {
+              console.log("nickname!")
+                nicknameTxt.text("사용 가능한 닉네임입니다.");
+                nicknameTxt.css("color", "#3938da");
+                $("#nicknameErr").hide();
+              } else {
+              console.log("email!")
+                emailTxt.text("사용 가능한 이메일입니다.");
+                emailTxt.css("color", "#3938da");
+                $("#emailErr").hide();
+              }
+            }
+          }
+        });
+    });
+});
+
+</script>
+<div>
+    <a href="/" style="border-bottom: none;">
+      <img src="images/logo5.png" style="width:200px; padding-left: 20px; padding-top: 10px;">
+    </a>
+    <a href="/login" id="loginBtn" class="button small">로그인</a>
+    <div id="wrapper">
+        <header id="header">
+            <h1>회원가입</h1>
+        </header>
+        <div id="main">
+            <section id="content" class="main">
+                <section>
+                    <form method="post" th:action th:object="${member}">
+                        <div class="row gtr-uniform">
+                            <div class="col-8 innerDiv">
+                                <input type="text" th:field="*{nickname}" id="nickname"
+                                       placeholder="닉네임(2자 이상 12자 이하)" th:errorclass="field-error"/>
+                            </div>
+                            <div class="col-4 innerDiv">
+                                <button type="button" class="checkBtn" id="nicknameBtn" disabled>중복확인</button>
+                            </div>
+                            <p class="field-error" id="nicknameErr" th:errors="*{nickname}"></p>
+                            <p class="field-check" id="nicknameTxt"></p>
+                            <div class="col-8 innerDiv">
+                                <input type="text" th:field="*{email}"
+                                       placeholder="이메일(ex@gmail.com)" th:errorclass="field-error"/>
+                            </div>
+                            <div class="col-4 innerDiv">
+                                <button type="button" class="checkBtn" id="emailBtn" disabled>중복확인</button>
+                            </div>
+                            <p class="field-error" id="emailErr" th:errors="*{email}"></p>
+                            <p class="field-check" id="emailTxt"></p>
+                            <div class="col-12 innerDiv">
+                                <input type="password" th:field="*{password}"
+                                       placeholder="비밀번호(영문, 숫자 조합 8자 이상 15자 이하)" th:errorclass="field-error"/>
+                            </div>
+                            <p class="field-error" id="passwordErr" th:errors="*{password}"></p>
+                            <p class="field-check" id="passwordTxt"></p>
+                            <!--              <div class="midDiv">-->
+                            <!--                  <span>성별과 연령 정보를 분석하여 더욱 취향에 맞는 노래를 추천해드릴 수 있어요!</span>-->
+                            <!--              </div>-->
+                            <div class="col-4 col-12-small midDiv">
+                                <h3>성별</h3>
+                            </div>
+                            <div class="col-4 col-12-small midDiv">
+                                <input type="radio" th:field="*{gender}" id="female"
+                                       th:value="FEMALE">
+                                <label for="female">여성</label>
+                            </div>
+                            <div class="col-4 col-12-small midDiv">
+                                <input type="radio" th:field="*{gender}" id="male"
+                                       th:value="${T(com.hyunrian.project.domain.enums.Gender).MALE}">
+                                <label for="male">남성</label>
+                            </div>
+                            <div class="col-4 col-12-small">
+                                <h3>연령</h3>
+                            </div>
+                            <div class="col-8 col-12-small">
+                                <select th:field="*{birthYear}">
+                                    <option th:each="year : ${#numbers.sequence(1950, 2010)}"
+                                            th:value="${year}" th:text="${year}"></option>
+                                </select>
+                            </div>
+
+                            <!--            <div class="col-12 midDiv">-->
+                            <!--              <input type="checkbox">-->
+                            <!--              <label>개인정보 수집 및 이용 동의</label>-->
+                            <!--            </div>-->
+                            <div class="buttonDiv">
+                                <button type="submit" class="button fit" id="submitBtn" disabled>가입하기</button>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+            </section>
+        </div>
+    </div>
 </div>
-
-
-
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/js/jquery.scrollex.min.js"></script>
-    <script src="assets/js/jquery.scrolly.min.js"></script>
-    <script src="assets/js/browser.min.js"></script>
-    <script src="assets/js/breakpoints.min.js"></script>
-    <script src="assets/js/util.js"></script>
-    <script src="assets/js/main.js"></script>
 </body>
 </html>

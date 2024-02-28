@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html th:replace="~{template/layout/baseWithoutLogo :: layout (~{::title}, ~{::style}, ~{::body})}"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>WhatSong - Login</title>
+    <style>
+    html {
+        max-width: 100%;
+        min-height: 100%;
+    }
+    #wrapper {
+        width: 30em;
+        padding-bottom: 7vw;
+    }
+    .midDiv {
+        padding-top: 5vw !important;
+    }
+    .innerDiv {
+        padding-bottom:40px;
+    }
+    #findLink {
+        font-size: 12pt;
+    }
+    #joinBtn {
+        float: right;
+        margin-top: 20px;
+        margin-right: 20px;
+    }
+
+    </style>
+</head>
+<body>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+  document.getElementById("email").addEventListener("input", function() {
+      checkValidation();
+  });
+
+  document.getElementById("password").addEventListener("input", function() {
+      checkValidation();
+  });
+
+});
+
+
+function checkValidation() {
+  let submitBtn = document.getElementById("submitBtn");
+
+  if (checkEmail() && checkPassword()) {
+      submitBtn.disabled = false;
+  } else {
+      submitBtn.disabled = true;
+  }
+}
+
+function checkEmail() {
+    let email = document.getElementById("email").value.trim();
+    let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailPattern.test(email);
+}
+
+function checkPassword() {
+    let password = document.getElementById("password").value.trim();
+    if (8 <= password.length) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+</script>
+<div>
+    <a href="/" style="border-bottom: none;">
+        <img src="images/logo5.png" style="width:200px; padding-left: 20px; padding-top: 10px;">
+    </a>
+    <a href="/join" id="joinBtn" class="button small">회원가입</a>
+    <div id="wrapper">
+        <header id="header">
+            <h1>로그인</h1>
+        </header>
+        <div id="main">
+            <section id="content" class="main">
+                <section>
+                    <form method="post" th:action th:object="${member}">
+                        <div class="row">
+                            <h4>이메일</h4>
+                            <div class="col-12 innerDiv" style="padding-bottom:40px;">
+                                <input type="email" th:field="*{email}" placeholder="이메일(example@gmail.com)"/>
+                            </div>
+                            <h4>비밀번호</h4>
+                            <div class="col-12 innerDiv">
+                                <input type="password" th:field="*{password}" placeholder="비밀번호"/>
+                            </div>
+                            <div style="padding-top: 40px;">
+                                <button type="submit" class="button fit" id="submitBtn" disabled>로그인</button>
+                            </div>
+                            <div style="padding-top: 20px;">
+                                <a href="/forgotPw" id="findLink">비밀번호를 잊으셨나요?</a>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+            </section>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -49,7 +49,7 @@ public class SpotifyUtils {
         return accessToken;
     }
 
-    public static List getMusicList(MusicSearchCondition condition)
+    public static List getMusicList(MusicSearchCondition condition, int page)
             throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
 
         getAccessToken();
@@ -57,12 +57,14 @@ public class SpotifyUtils {
 
         switch (condition.getSearchType()) {
             case TRACK:
-                Track[] tracks = spotifyApi.searchTracks(condition.getKeyword())
+                Paging<Track> trackPaging = spotifyApi.searchTracks(condition.getKeyword())
                         .limit(LIMIT)
+                        .offset(LIMIT * (page - 1))
                         .setHeader(HEADER_NAME, HEADER_VALUE)
                         .build()
-                        .execute()
-                        .getItems();
+                        .execute();
+
+                Track[] tracks = trackPaging.getItems();
 
                 List<SpotifySearchTrack> trackList = new ArrayList<>();
 
@@ -92,12 +94,14 @@ public class SpotifyUtils {
                 return trackList;
 
             case ARTIST:
-                Artist[] artists = spotifyApi.searchArtists(condition.getKeyword())
+                Paging<Artist> artistPaging = spotifyApi.searchArtists(condition.getKeyword())
                         .setHeader(HEADER_NAME, HEADER_VALUE)
                         .limit(LIMIT)
+                        .offset(LIMIT * (page - 1))
                         .build()
-                        .execute()
-                        .getItems();
+                        .execute();
+
+                Artist[] artists =  artistPaging.getItems();
 
                 List<SpotifySearchArtist> artistList = new ArrayList<>();
                 for (Artist artist : artists) {
@@ -118,7 +122,7 @@ public class SpotifyUtils {
         return null;
     }
 
-    public static SpotifyArtist getArtistDetail(String artistId) throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
+    public static SpotifyArtist getArtistDetail(String artistId, int page) throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
         getAccessToken();
         Thread.sleep(200);
 
@@ -150,7 +154,7 @@ public class SpotifyUtils {
         spotifyArtist.setRelatedArtistList(getRelatedArtist(artistId));
 
         //아티스트의 앨범
-        spotifyArtist.setArtistAlbumList(getArtistAlbum(artistId));
+        spotifyArtist.setArtistAlbumList(getArtistAlbum(artistId, page));
 
         return spotifyArtist;
     }
@@ -199,7 +203,7 @@ public class SpotifyUtils {
         return music;
     }
 
-    public static SpotifyAlbum getAlbumDetail(String albumId) throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
+    public static SpotifyAlbum getAlbumDetail(String albumId, int albumPage) throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
         getAccessToken();
         Thread.sleep(200);
 
@@ -239,18 +243,19 @@ public class SpotifyUtils {
         spotifyAlbum.setArtistList(artistList);
 
         //아티스트의 다른 앨범
-        spotifyAlbum.setAlbumList(getArtistAlbum(artistList.get(0).getId()));
+        spotifyAlbum.setAlbumList(getArtistAlbum(artistList.get(0).getId(), albumPage));
 
         return spotifyAlbum;
     }
 
-    public static List<SpotifyNewRelease> getNewReleaseAlbum() throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
+    public static List<SpotifyNewRelease> getNewReleaseAlbum(int page) throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
         getAccessToken();
         Thread.sleep(200);
 
         Paging<AlbumSimplified> paging = spotifyApi.getListOfNewReleases()
                 .setHeader(HEADER_NAME, HEADER_VALUE)
                 .limit(LIMIT)
+                .offset(LIMIT * (page - 1))
                 .build()
                 .execute();
 
@@ -365,12 +370,13 @@ public class SpotifyUtils {
         return list;
     }
 
-    private static List<AlbumDto> getArtistAlbum(String artistId) throws IOException, ParseException, SpotifyWebApiException {
+    private static List<AlbumDto> getArtistAlbum(String artistId, int page) throws IOException, ParseException, SpotifyWebApiException {
         getAccessToken();
 
         Paging<AlbumSimplified> paging = spotifyApi.getArtistsAlbums(artistId)
                 .setHeader(HEADER_NAME, HEADER_VALUE)
                 .limit(LIMIT)
+                .offset(LIMIT * (page - 1))
                 .build()
                 .execute();
 

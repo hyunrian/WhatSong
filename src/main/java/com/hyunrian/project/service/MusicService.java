@@ -36,18 +36,18 @@ public class MusicService {
     /**
      * 검색
      */
-    public List getSearchResult(MusicSearchCondition condition)
-            throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
-
-        return SpotifyUtils.getMusicList(condition);
-    }
+//    public List getSearchResult(MusicSearchCondition condition)
+//            throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
+//
+//        return SpotifyUtils.getMusicList(condition);
+//    }
 
     /**
      * 아티스트 정보
      */
-    public SpotifyArtist getArtistInfo(String artistId) throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
-        return SpotifyUtils.getArtistDetail(artistId);
-    }
+//    public SpotifyArtist getArtistInfo(String artistId) throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
+//        return SpotifyUtils.getArtistDetail(artistId);
+//    }
 
     /**
      * 트랙 정보
