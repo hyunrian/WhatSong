@@ -26,6 +26,10 @@
         margin-top: 20px;
         margin-right: 20px;
     }
+    .field-error {
+        color: #dc3545;
+        font-size: 13pt;
+    }
 
     </style>
 </head>
@@ -33,7 +37,7 @@
 <script>
 document.addEventListener("DOMContentLoaded", function() {
 
-  document.getElementById("email").addEventListener("input", function() {
+  document.getElementById("username").addEventListener("input", function() {
       checkValidation();
   });
 
@@ -55,7 +59,7 @@ function checkValidation() {
 }
 
 function checkEmail() {
-    let email = document.getElementById("email").value.trim();
+    let email = document.getElementById("username").value.trim();
     let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailPattern.test(email);
 }
@@ -82,15 +86,18 @@ function checkPassword() {
         <div id="main">
             <section id="content" class="main">
                 <section>
-                    <form method="post" th:action th:object="${member}">
+                    <form method="post" th:action="@{/login}" th:object="${member}">
                         <div class="row">
                             <h4>이메일</h4>
                             <div class="col-12 innerDiv" style="padding-bottom:40px;">
-                                <input type="email" th:field="*{email}" placeholder="이메일(example@gmail.com)"/>
+                                <input type="email" name="username" id="username" placeholder="이메일(example@gmail.com)"/>
                             </div>
                             <h4>비밀번호</h4>
                             <div class="col-12 innerDiv">
-                                <input type="password" th:field="*{password}" placeholder="비밀번호"/>
+                                <input type="password" name="password" id="password" placeholder="비밀번호"/>
+                            </div>
+                            <div th:if="${param.error}">
+                                <div class="field-error">이메일 또는 비밀번호를 확인해주세요.</div>
                             </div>
                             <div style="padding-top: 40px;">
                                 <button type="submit" class="button fit" id="submitBtn" disabled>로그인</button>

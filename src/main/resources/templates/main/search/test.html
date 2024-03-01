@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html xmlns="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
+<a sec:authorize="isAnonymous()" th:href="@{/login}">로그인</a>
+<a sec:authorize="isAuthenticated()" th:href="@{/logout}">로그아웃</a>
 <body>
 <h1>검색 결과</h1>
 <table>

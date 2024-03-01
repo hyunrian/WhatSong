@@ -26,7 +26,7 @@ public class Member {
     @Column(unique = true, length = 30)
     private String nickname;
 
-    @Column(length = 30)
+    @Column(length = 100)
     private String password;
 
     @Enumerated(EnumType.STRING)

@@ -133,10 +133,17 @@ $(document).ready(function() {
         let nicknameTxt = $("#nicknameTxt");
         let emailTxt = $("#emailTxt");
 
+        //csrf 토큰 얻기
+        let csrfToken = $("meta[name='_csrf']").attr("content");
+        let csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
         $.ajax({
           type: "POST",
           url: "/checkDup",
           data: {data : data, name : name},
+          beforeSend: function(xhr) {
+              xhr.setRequestHeader(csrfHeader, csrfToken);
+          },
           success: function(response) {
 
             if (response) { //존재하는 경우
@@ -145,7 +152,6 @@ $(document).ready(function() {
                 nicknameTxt.css("color", "#dc3545");
                 $("#nicknameErr").hide();
               } else {
-              console.log("email!")
                 emailTxt.text("이미 등록된 이메일입니다.");
                 emailTxt.css("color", "#dc3545");
                 $("#emailErr").hide();
@@ -153,12 +159,10 @@ $(document).ready(function() {
 
             } else { //존재하지 않는 경우
               if (name == "nickname") {
-              console.log("nickname!")
                 nicknameTxt.text("사용 가능한 닉네임입니다.");
                 nicknameTxt.css("color", "#3938da");
                 $("#nicknameErr").hide();
               } else {
-              console.log("email!")
                 emailTxt.text("사용 가능한 이메일입니다.");
                 emailTxt.css("color", "#3938da");
                 $("#emailErr").hide();
@@ -182,7 +186,7 @@ $(document).ready(function() {
         <div id="main">
             <section id="content" class="main">
                 <section>
-                    <form method="post" th:action th:object="${member}">
+                    <form method="post" th:action="@{/auth}" th:object="${member}">
                         <div class="row gtr-uniform">
                             <div class="col-8 innerDiv">
                                 <input type="text" th:field="*{nickname}" id="nickname"

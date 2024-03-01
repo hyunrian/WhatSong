@@ -12,8 +12,11 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.UniqueConstraint;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,15 +27,20 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
 
     public Member save(MemberJoinDto joinDto) throws MessagingException, UnsupportedEncodingException {
-//        joinDto.setToken(UUID.randomUUID().toString());
+
+        joinDto.setPassword(passwordEncoder.encode(joinDto.getPassword()));
+
         Member member = new Member().getJoinMember(joinDto);
         Member joinedMember = memberRepository.save(member);
+
         sendEmail(joinedMember.getEmail(), SendingEmailType.JOIN);
 
         return joinedMember;
@@ -43,6 +51,8 @@ public class MemberService {
         Member member = findByEmail(email).orElseThrow();
         String token = UUID.randomUUID().toString();
         member.updateToken(token);
+
+        log.info("Sending Mail To User - email={}, emailType={}", email, emailType.toString());
 
         MimeMessage message = mailSender.createMimeMessage();
         message.addRecipients(Message.RecipientType.TO, email);
@@ -122,6 +132,17 @@ public class MemberService {
     @Transactional(readOnly = true)
     public Optional<Member> findByEmail(String email) {
         return memberRepository.findByEmail(email);
+    }
+
+    @Transactional(readOnly = true)
+    public String findNicknameByEmail(String email) {
+        Member member = memberRepository.findByEmail(email).orElseThrow();
+        return member.getNickname();
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Member> findByNickname(String nickname) {
+        return memberRepository.findByNickname(nickname);
     }
 
     public void delete(Long id) {
