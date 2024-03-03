@@ -1,4 +1,4 @@
-package com.hyunrian.project.domain.enums;
+package com.hyunrian.project.domain.enums.member;
 
 public class LoginConstant {
     public static final String LOGIN_MEMBER = "loginMember";

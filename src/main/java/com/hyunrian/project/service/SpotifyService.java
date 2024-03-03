@@ -1,6 +1,6 @@
 package com.hyunrian.project.service;
 
-import com.hyunrian.project.dto.*;
+import com.hyunrian.project.dto.music.*;
 import com.hyunrian.project.utils.SpotifyUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.hc.core5.http.ParseException;

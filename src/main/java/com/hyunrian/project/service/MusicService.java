@@ -1,7 +1,8 @@
 package com.hyunrian.project.service;
 
 import com.hyunrian.project.domain.*;
-import com.hyunrian.project.dto.*;
+import com.hyunrian.project.dto.music.SpotifyAlbum;
+import com.hyunrian.project.dto.music.SpotifyMusic;
 import com.hyunrian.project.repository.*;
 import com.hyunrian.project.utils.SpotifyUtils;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Service;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 
 import java.io.IOException;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

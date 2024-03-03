@@ -1,4 +1,4 @@
-package com.hyunrian.project.dto;
+package com.hyunrian.project.dto.member;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -2,16 +2,13 @@ package com.hyunrian.project.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Music {
 
     @Id @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -19,17 +16,28 @@ public class Music {
     private Long id;
 
     @NotBlank
-    private String title;
+    private String trackId;
 
     @NotBlank
-    private String singer;
+    private String trackName;
 
-    private String composer;
-    private String lyricist;
-    private String release;
+    @NotBlank
+    private String artistId;
 
-//    private LocalDateTime savedDate;
+    @NotBlank
+    private String artistName;
+
+    private String imageUrl;
+
     private int likeCount;
+
+    public Music(String trackId, String trackName, String artistId, String artistName, String imageUrl) {
+        this.trackId = trackId;
+        this.trackName = trackName;
+        this.artistId = artistId;
+        this.artistName = artistName;
+        this.imageUrl = imageUrl;
+    }
 
 
     /**

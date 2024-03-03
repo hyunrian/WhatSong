@@ -1,7 +1,7 @@
 package com.hyunrian.project.handler;
 
-import com.hyunrian.project.domain.enums.LoginConstant;
-import com.hyunrian.project.domain.enums.MemberRole;
+import com.hyunrian.project.domain.enums.member.LoginConstant;
+import com.hyunrian.project.domain.enums.member.MemberRole;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

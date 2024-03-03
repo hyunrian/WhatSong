@@ -1,6 +1,6 @@
-package com.hyunrian.project.dto;
+package com.hyunrian.project.dto.music;
 
-import com.hyunrian.project.domain.enums.SearchType;
+import com.hyunrian.project.domain.enums.music.SearchType;
 import lombok.Getter;
 import lombok.Setter;
 

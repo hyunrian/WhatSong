@@ -11,7 +11,6 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 
 import static com.hyunrian.project.domain.QMusic.*;
-import static com.hyunrian.project.domain.QSelectedMusic.*;
 
 @Repository
 public class MusicQueryRepository {
@@ -49,17 +48,17 @@ public class MusicQueryRepository {
                 .fetch();
     }
 */
-    private BooleanExpression likeSinger(String singer) {
-        if (StringUtils.hasText(singer)) {
-            return music.singer.like("%" + singer + "%");
-        }
-        return null;
-    }
-
-    private BooleanExpression likeTitle(String title) {
-        if (StringUtils.hasText(title)) {
-            return music.singer.like("%" + title + "%");
-        }
-        return null;
-    }
+//    private BooleanExpression likeSinger(String singer) {
+//        if (StringUtils.hasText(singer)) {
+//            return music.singer.like("%" + singer + "%");
+//        }
+//        return null;
+//    }
+//
+//    private BooleanExpression likeTitle(String title) {
+//        if (StringUtils.hasText(title)) {
+//            return music.singer.like("%" + title + "%");
+//        }
+//        return null;
+//    }
 }

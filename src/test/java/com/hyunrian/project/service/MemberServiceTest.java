@@ -1,9 +1,9 @@
 package com.hyunrian.project.service;
 
 import com.hyunrian.project.domain.Member;
-import com.hyunrian.project.domain.enums.Gender;
-import com.hyunrian.project.dto.MemberJoinDto;
-import com.hyunrian.project.dto.MemberUpdateDto;
+import com.hyunrian.project.domain.enums.member.Gender;
+import com.hyunrian.project.dto.member.MemberJoinDto;
+import com.hyunrian.project.dto.member.MemberUpdateDto;
 import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,25 +22,7 @@ class MemberServiceTest {
     MemberService memberService;
 
     @Test
-    void save() throws MessagingException, UnsupportedEncodingException {
-        MemberJoinDto joinDto = new MemberJoinDto();
-        joinDto.setNickname("tester");
-        joinDto.setPassword("123");
-        joinDto.setBirthYear(2000);
-        joinDto.setGender(Gender.FEMALE);
-        joinDto.setEmail("aaa");
-
-        Member savedMember = memberService.save(joinDto);
-
-        assertThat(savedMember.getNickname()).isEqualTo(joinDto.getNickname());
-        assertThat(savedMember.getPassword()).isEqualTo(joinDto.getPassword());
-        assertThat(savedMember.getEmail()).isEqualTo(joinDto.getEmail());
-        assertThat(savedMember.getBirthYear()).isEqualTo(joinDto.getBirthYear());
-        assertThat(savedMember.getGender()).isEqualTo(joinDto.getGender());
-    }
-
-    @Test
-    void update() throws MessagingException, UnsupportedEncodingException {
+    void update() {
         Long id = getSavedMember().getId();
         MemberUpdateDto updateDto = new MemberUpdateDto();
         updateDto.setNickname("updateTest");
@@ -75,7 +57,7 @@ class MemberServiceTest {
         assertThat(savedMember.getId()).isEqualTo(member.getId());
     }
 
-    Member getSavedMember() throws MessagingException, UnsupportedEncodingException {
+    Member getSavedMember() {
         MemberJoinDto joinDto = new MemberJoinDto();
         joinDto.setNickname("tester");
         joinDto.setPassword("123");

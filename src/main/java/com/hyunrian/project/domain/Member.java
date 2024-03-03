@@ -1,8 +1,8 @@
 package com.hyunrian.project.domain;
 
-import com.hyunrian.project.domain.enums.Gender;
-import com.hyunrian.project.domain.enums.MemberStatus;
-import com.hyunrian.project.dto.MemberJoinDto;
+import com.hyunrian.project.domain.enums.member.Gender;
+import com.hyunrian.project.domain.enums.member.MemberStatus;
+import com.hyunrian.project.dto.member.MemberJoinDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 

@@ -1,6 +1,6 @@
 package com.hyunrian.project;
 
-import com.hyunrian.project.dto.SpotifySearchTrack;
+import com.hyunrian.project.dto.music.SpotifySearchTrack;
 import com.hyunrian.project.utils.SpotifyUtils;
 import com.neovisionaries.i18n.CountryCode;
 import org.apache.hc.core5.http.ParseException;

@@ -1,10 +1,8 @@
 package com.hyunrian.project.controller;
 
-import com.hyunrian.project.domain.enums.SearchType;
-import com.hyunrian.project.dto.*;
-import com.hyunrian.project.service.MusicService;
+import com.hyunrian.project.domain.enums.music.SearchType;
+import com.hyunrian.project.dto.music.*;
 import com.hyunrian.project.service.SpotifyService;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.http.ParseException;

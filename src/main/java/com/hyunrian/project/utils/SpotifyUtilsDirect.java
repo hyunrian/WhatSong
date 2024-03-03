@@ -1,31 +1,10 @@
 package com.hyunrian.project.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hyunrian.project.domain.enums.SearchType;
-import com.hyunrian.project.domain.enums.SpotifyRequestType;
-import com.hyunrian.project.dto.*;
-import com.hyunrian.project.exception.Spotify429Error;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.hc.core5.http.ParseException;
-import org.springframework.http.*;
-import org.springframework.web.client.RestTemplate;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.SpotifyHttpManager;
-import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
-import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
-import se.michaelthelin.spotify.model_objects.specification.Album;
-import se.michaelthelin.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
 
-import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-
-import static com.hyunrian.project.domain.enums.SpotifyURLConstants.*;
 
 @Slf4j
 public class SpotifyUtilsDirect {

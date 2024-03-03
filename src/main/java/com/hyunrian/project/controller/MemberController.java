@@ -1,12 +1,11 @@
 package com.hyunrian.project.controller;
 
 import com.hyunrian.project.domain.Member;
-import com.hyunrian.project.domain.enums.Gender;
-import com.hyunrian.project.domain.enums.LoginConstant;
-import com.hyunrian.project.domain.enums.MemberStatus;
-import com.hyunrian.project.domain.enums.SendingEmailType;
-import com.hyunrian.project.dto.MemberJoinDto;
-import com.hyunrian.project.dto.MemberLoginDto;
+import com.hyunrian.project.domain.enums.member.Gender;
+import com.hyunrian.project.domain.enums.member.LoginConstant;
+import com.hyunrian.project.domain.enums.member.MemberStatus;
+import com.hyunrian.project.domain.enums.member.SendingEmailType;
+import com.hyunrian.project.dto.member.MemberJoinDto;
 import com.hyunrian.project.service.MemberService;
 import com.hyunrian.project.validation.ValidationSequence;
 import jakarta.mail.MessagingException;
@@ -35,7 +34,7 @@ public class MemberController {
     private final MemberService memberService;
 
     //잘못된 접근 페이지 처리
-    //spring security - 진행중
+    //메일 인증 후 시작하기 페이지 버튼 css 확인
     //소셜 로그인
 
     /**
@@ -85,7 +84,7 @@ public class MemberController {
         }
 
         memberService.save(memberJoinDto);
-//        redirectAttributes.addFlashAttribute("email", memberJoinDto.getEmail());
+        memberService.sendEmail(memberJoinDto.getEmail(), SendingEmailType.JOIN);
 
         request.getSession().setAttribute("email", memberJoinDto.getEmail());
 

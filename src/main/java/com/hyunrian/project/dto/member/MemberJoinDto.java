@@ -1,12 +1,11 @@
-package com.hyunrian.project.dto;
+package com.hyunrian.project.dto.member;
 
-import com.hyunrian.project.domain.enums.Gender;
+import com.hyunrian.project.domain.enums.member.Gender;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import static com.hyunrian.project.validation.ValidationSequence.*;
-
 
 @Getter @Setter
 public class MemberJoinDto {

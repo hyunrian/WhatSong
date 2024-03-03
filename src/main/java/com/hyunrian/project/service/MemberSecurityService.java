@@ -1,9 +1,8 @@
 package com.hyunrian.project.service;
 
 import com.hyunrian.project.domain.Member;
-import com.hyunrian.project.domain.enums.LoginConstant;
-import com.hyunrian.project.domain.enums.MemberRole;
-import com.hyunrian.project.domain.enums.MemberStatus;
+import com.hyunrian.project.domain.enums.member.MemberRole;
+import com.hyunrian.project.domain.enums.member.MemberStatus;
 import com.hyunrian.project.repository.MemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

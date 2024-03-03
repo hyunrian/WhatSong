@@ -1,7 +1,6 @@
-package com.hyunrian.project.dto;
+package com.hyunrian.project.dto.music;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 public class SpotifySearchArtist extends SpotifySearch {

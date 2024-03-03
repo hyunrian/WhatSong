@@ -1,22 +1,7 @@
 package com.hyunrian.project.service;
 
-import com.hyunrian.project.domain.enums.SearchType;
-import com.hyunrian.project.domain.enums.SpotifyRequestType;
-import com.hyunrian.project.dto.MusicSearchCondition;
-import com.hyunrian.project.dto.SpotifyAlbum;
-import com.hyunrian.project.dto.SpotifyArtist;
-import com.hyunrian.project.dto.SpotifyMusic;
-import com.hyunrian.project.utils.SpotifyUtils;
-import org.apache.hc.core5.http.ParseException;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
-
-import java.io.IOException;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 class MusicServiceTest {

@@ -1,4 +1,4 @@
-package com.hyunrian.project.domain.enums;
+package com.hyunrian.project.domain.enums.music;
 
 public class SpotifyURLConstants {
 

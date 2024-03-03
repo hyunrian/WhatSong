@@ -1,16 +1,13 @@
 package com.hyunrian.project.controller;
 
-import com.hyunrian.project.domain.enums.LoginConstant;
+import com.hyunrian.project.domain.enums.member.LoginConstant;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
-import java.net.http.HttpRequest;
 
 @Controller
 @Slf4j
