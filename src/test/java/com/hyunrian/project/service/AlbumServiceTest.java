@@ -3,12 +3,14 @@ package com.hyunrian.project.service;
 import com.hyunrian.project.domain.Album;
 import com.hyunrian.project.domain.Member;
 import com.hyunrian.project.domain.Music;
+import com.hyunrian.project.domain.MusicInAlbum;
 import com.hyunrian.project.domain.enums.member.Gender;
 import com.hyunrian.project.domain.enums.music.SearchType;
 import com.hyunrian.project.dto.music.ArtistDto;
 import com.hyunrian.project.dto.member.MemberJoinDto;
 import com.hyunrian.project.dto.music.MusicSearchCondition;
 import com.hyunrian.project.dto.music.SpotifySearchTrack;
+import com.hyunrian.project.repository.MusicRepository;
 import com.hyunrian.project.utils.SpotifyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.http.ParseException;
@@ -30,6 +32,7 @@ class AlbumServiceTest {
 
     @Autowired AlbumService albumService;
     @Autowired MemberService memberService;
+    @Autowired MusicRepository musicRepository;
 
     @Test
     void getAlbumList() {
@@ -43,17 +46,20 @@ class AlbumServiceTest {
         assertThat(albumList.size()).isEqualTo(5);
     }
 
+    @Transactional
     @Test
     void addMusicToAlbum() throws IOException, ParseException, InterruptedException, SpotifyWebApiException {
         Member member = getSavedMember();
         Album album = albumService.createAlbum("myAlbum", member.getNickname());
 
-        album.addMusicToAlbum(getMusic(0));
-        album.addMusicToAlbum(getMusic(1));
+        Music music1 = getMusic(0);
+        Music music2 = getMusic(1);
+        albumService.addMusicToAlbum(album.getId(), music1);
+        albumService.addMusicToAlbum(album.getId(), music2);
 
-        List<Music> musicList = albumService.findMusicListByAlbumId(album.getId());
-        log.info("musicList.get(0) trackName={}", musicList.get(0).getTrackName());
-        log.info("musicList.get(1) trackName={}", musicList.get(1).getTrackName());
+        List<MusicInAlbum> musicList = albumService.findMusicListByAlbumId(album.getId());
+        log.info("album.getId()={}", album.getId());
+        log.info("musicList={}", album.getMusicInAlbumList());
 
         assertThat(musicList.size()).isEqualTo(2);
     }
@@ -63,7 +69,7 @@ class AlbumServiceTest {
         condition.setSearchType(SearchType.TRACK);
         condition.setKeyword("galantis");
 
-        SpotifySearchTrack track = (SpotifySearchTrack) SpotifyUtils.getMusicList(condition, 1).get(0);
+        SpotifySearchTrack track = (SpotifySearchTrack) SpotifyUtils.getMusicList(condition, 1).get(order);
         ArtistDto artistDto = track.getArtistList().get(0);
 
         log.info("trackId={}", track.getTrackId());

@@ -42,7 +42,9 @@ public class Member {
 
     private String token;
 
-    @Column()
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "member")
+    private List<Album> albumList = new ArrayList<>();
+
     private LocalDateTime joinedDate = LocalDateTime.now();
 
     @OneToMany(mappedBy = "member")
@@ -82,5 +84,7 @@ public class Member {
     public void changePwToTemp(String temp) {
         this.password = temp;
     }
+
+
 
 }

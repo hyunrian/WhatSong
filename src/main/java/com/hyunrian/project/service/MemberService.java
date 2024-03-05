@@ -1,5 +1,6 @@
 package com.hyunrian.project.service;
 
+import com.hyunrian.project.domain.Album;
 import com.hyunrian.project.domain.Member;
 import com.hyunrian.project.domain.enums.member.SendingEmailType;
 import com.hyunrian.project.dto.member.MemberJoinDto;
@@ -14,12 +15,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+//@Transactional(readOnly = true)
 @Slf4j
 public class MemberService {
 
@@ -111,6 +114,5 @@ public class MemberService {
         Member member = memberRepository.findById(id).orElseThrow();
         memberRepository.delete(member);
     }
-
 
 }

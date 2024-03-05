@@ -17,7 +17,7 @@ import java.util.List;
 @TestPropertySource(properties = {
         "spring.datasource.url=jdbc:h2:tcp://localhost/~/projectTest",
         "spring.datasource.username=sa",
-        "spring.jpa.hibernate.ddl-auto:update"
+        "spring.jpa.hibernate.ddl-auto:create"
 })
 @Slf4j
 public class MemberRepositoryPerformanceTest {

@@ -24,9 +24,8 @@ public class Album {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "music_id")
-    private List<Music> musicList = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "album")
+    private List<MusicInAlbum> musicInAlbumList = new ArrayList<>();
 
     private int likeCount;
 
@@ -38,14 +37,18 @@ public class Album {
         this.albumName = albumName;
     }
 
+    //연관관계 편의 메서드
+    public void addMusic(MusicInAlbum musicInAlbum) {
+        musicInAlbumList.add(musicInAlbum);
+        musicInAlbum.setAlbum(this);
+    }
+
     //좋아요 로직
     public void updateLikeCount(boolean isLiked) {
         if (isLiked) likeCount++;
         else likeCount--;
     }
 
-    public void addMusicToAlbum(Music music) {
-        musicList.add(music);
-    }
+
 
 }

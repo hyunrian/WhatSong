@@ -3,6 +3,7 @@ package com.hyunrian.project;
 import com.hyunrian.project.dto.music.SpotifySearchTrack;
 import com.hyunrian.project.utils.SpotifyUtils;
 import com.neovisionaries.i18n.CountryCode;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.http.ParseException;
 import org.junit.jupiter.api.Test;
 import se.michaelthelin.spotify.SpotifyApi;
@@ -19,6 +20,7 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.*;
 
+@Slf4j
 public class SpotifyUtilsApiTest {
 
     @Test
@@ -31,14 +33,14 @@ public class SpotifyUtilsApiTest {
 
     @Test
     void getRecommendation() throws IOException, ParseException, InterruptedException, SpotifyWebApiException {
-        List<SpotifySearchTrack> list = SpotifyUtils.getRecommendation(null, "1J0NAemu98Bg5y39sqqfMI,4OKJVnIyO8KRq182dstNOI");
+        List<SpotifySearchTrack> list = SpotifyUtils.getRecommendation("1J0NAemu98Bg5y39sqqfMI,4OKJVnIyO8KRq182dstNOI");
         for (SpotifySearchTrack searchTrack : list) {
             System.out.println(searchTrack.getTrackName() + " - " + searchTrack.getArtistList().get(0).getName());
         }
     }
 
     @Test
-    void pagination() throws IOException, ParseException, InterruptedException, SpotifyWebApiException {
+    void pagination() throws IOException, ParseException, SpotifyWebApiException {
         SpotifyApi spotifyApi = getApi();
 
         //최초 요청

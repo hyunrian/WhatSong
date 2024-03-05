@@ -292,15 +292,16 @@ public class SpotifyUtils {
         return null;
     }
 
-    public static List<SpotifySearchTrack> getRecommendation(String genres, String tracks) throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
+    /**
+     * 유저 취향 기반 음악 추천
+     * @param tracks: up to 5
+     */
+    public static List<SpotifySearchTrack> getRecommendation(String tracks) throws IOException, ParseException, SpotifyWebApiException, InterruptedException {
         getAccessToken();
         Thread.sleep(200);
 
         Recommendations reco = spotifyApi.getRecommendations()
                 .setHeader(HEADER_NAME, HEADER_VALUE)
-//                .seed_genres(genres)
-//                .min_acousticness(0.9F)
-//                .min_energy(0.9F)
                 .seed_tracks(tracks)
 //                .min_popularity(70)
                 .limit(LIMIT)

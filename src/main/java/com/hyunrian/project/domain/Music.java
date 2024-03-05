@@ -6,6 +6,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,6 +34,9 @@ public class Music {
 
     private int likeCount;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "music")
+    private List<MusicInAlbum> musicInAlbumList = new ArrayList<>();
+
     public Music(String trackId, String trackName, String artistId, String artistName, String imageUrl) {
         this.trackId = trackId;
         this.trackName = trackName;
@@ -48,5 +54,17 @@ public class Music {
     public void updateLikeCount(boolean isLiked) {
         if (isLiked) likeCount++;
         else likeCount--;
+    }
+
+    @Override
+    public String toString() {
+        return "Music{" +
+                "trackId='" + trackId + '\'' +
+                ", trackName='" + trackName + '\'' +
+                ", artistId='" + artistId + '\'' +
+                ", artistName='" + artistName + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", likeCount=" + likeCount +
+                '}';
     }
 }
