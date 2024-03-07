@@ -1,10 +1,13 @@
-package com.hyunrian.project.repository;
+package com.hyunrian.project.testWithData.repository;
 
 import com.hyunrian.project.domain.Album;
 import com.hyunrian.project.domain.Member;
 import com.hyunrian.project.domain.Music;
 import com.hyunrian.project.domain.MusicInAlbum;
 import com.hyunrian.project.dto.member.MemberJoinDto;
+import com.hyunrian.project.repository.AlbumRepository;
+import com.hyunrian.project.repository.MemberRepository;
+import com.hyunrian.project.repository.MusicRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,9 +27,12 @@ import java.util.List;
 })
 public class AlbumRepositoryPerformanceTest {
 
-    @Autowired AlbumRepository albumRepository;
-    @Autowired MemberRepository memberRepository;
-    @Autowired MusicRepository musicRepository;
+    @Autowired
+    AlbumRepository albumRepository;
+    @Autowired
+    MemberRepository memberRepository;
+    @Autowired
+    MusicRepository musicRepository;
 
     @BeforeEach
     void setData() {

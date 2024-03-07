@@ -105,14 +105,32 @@ public class MemberService {
         return member.getNickname();
     }
 
+    public String findEmailByNickname(String nickname) {
+        Member member = memberRepository.findByNickname(nickname).orElseThrow();
+        return member.getEmail();
+    }
+
     public Optional<Member> findByNickname(String nickname) {
         return memberRepository.findByNickname(nickname);
     }
+
+    public List<Member> findAll() {
+        return memberRepository.findAll();
+    }
+
+    public List<Album> findMemberAlbum(Member member) {
+        return member.getAlbumList();
+    }
+
 
     @Transactional
     public void delete(Long id) {
         Member member = memberRepository.findById(id).orElseThrow();
         memberRepository.delete(member);
+    }
+
+    public boolean existsByEmail(String email) {
+        return memberRepository.existsByEmail(email);
     }
 
 }

@@ -39,6 +39,7 @@ public class AlbumService {
         /**
          * 앨범에 추가할 노래가 테이블에 없으면 저장
          * 영속성 컨텍스트 관리를 위해 경우에 따라 다른 데이터 사용
+         *  - MusicPreference 테이블에 함께 추가 필요
          */
         if (!isExisted) {
             log.info("Music 테이블에 music 저장 - {}", music);

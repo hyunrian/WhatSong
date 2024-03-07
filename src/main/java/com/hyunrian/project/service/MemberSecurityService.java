@@ -4,7 +4,6 @@ import com.hyunrian.project.domain.Member;
 import com.hyunrian.project.domain.enums.member.MemberRole;
 import com.hyunrian.project.domain.enums.member.MemberStatus;
 import com.hyunrian.project.repository.MemberRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,7 +22,6 @@ import java.util.Optional;
 public class MemberSecurityService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
-    private final HttpServletRequest request;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -43,8 +41,6 @@ public class MemberSecurityService implements UserDetailsService {
         } else {
             authorities.add(new SimpleGrantedAuthority(MemberRole.USER.getValue()));
         }
-
-//        request.getSession().setAttribute(LoginConstant.LOGIN_MEMBER, username);
 
         return new User(member.getEmail(), member.getPassword(), authorities);
     }

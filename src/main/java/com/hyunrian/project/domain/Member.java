@@ -50,6 +50,10 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<LikeAlbum> likeAlbum = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member")
+    private List<MusicPreference> musicPreferenceList = new ArrayList<>();
+
+
     /**
      * 비즈니스 로직
      */

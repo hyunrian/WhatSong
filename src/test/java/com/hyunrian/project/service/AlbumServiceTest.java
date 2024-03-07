@@ -46,7 +46,6 @@ class AlbumServiceTest {
         assertThat(albumList.size()).isEqualTo(5);
     }
 
-    @Transactional
     @Test
     void addMusicToAlbum() throws IOException, ParseException, InterruptedException, SpotifyWebApiException {
         Member member = getSavedMember();
@@ -89,6 +88,16 @@ class AlbumServiceTest {
         joinDto.setEmail("aaa");
 
         return memberService.save(joinDto);
+    }
+
+    @Test
+    void findByAlbumId_쿼리확인() {
+        albumService.findById(1L);
+    }
+
+    @Test
+    void findByMemberId_쿼리확인() {
+        albumService.findByMemberId(1L);
     }
 
 }

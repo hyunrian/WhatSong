@@ -176,7 +176,7 @@ $(document).ready(function() {
 </script>
 <div>
     <a href="/" style="border-bottom: none;">
-      <img src="images/logo5.png" style="width:200px; padding-left: 20px; padding-top: 10px;">
+      <img src="images/logo.png" style="width:200px; padding-left: 20px; padding-top: 20px;">
     </a>
     <a href="/login" id="loginBtn" class="button small">로그인</a>
     <div id="wrapper">
@@ -186,7 +186,7 @@ $(document).ready(function() {
         <div id="main">
             <section id="content" class="main">
                 <section>
-                    <form method="post" th:action="@{/auth}" th:object="${member}">
+                    <form method="post" th:action th:object="${member}">
                         <div class="row gtr-uniform">
                             <div class="col-8 innerDiv">
                                 <input type="text" th:field="*{nickname}" id="nickname"
@@ -225,7 +225,7 @@ $(document).ready(function() {
                             </div>
                             <div class="col-4 col-12-small midDiv">
                                 <input type="radio" th:field="*{gender}" id="male"
-                                       th:value="${T(com.hyunrian.project.domain.enums.Gender).MALE}">
+                                       th:value="${T(com.hyunrian.project.domain.enums.member.Gender).MALE}">
                                 <label for="male">남성</label>
                             </div>
                             <div class="col-4 col-12-small">

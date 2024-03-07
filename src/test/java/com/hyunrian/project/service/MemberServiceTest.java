@@ -2,6 +2,7 @@ package com.hyunrian.project.service;
 
 import com.hyunrian.project.domain.Album;
 import com.hyunrian.project.domain.Member;
+import com.hyunrian.project.domain.MusicPreference;
 import com.hyunrian.project.domain.enums.member.Gender;
 import com.hyunrian.project.dto.member.MemberJoinDto;
 import com.hyunrian.project.dto.member.MemberUpdateDto;
@@ -24,11 +25,8 @@ import static org.assertj.core.api.Assertions.*;
 @Slf4j
 class MemberServiceTest {
 
-    @Autowired
-    MemberService memberService;
+    @Autowired MemberService memberService;
     @Autowired AlbumService albumService;
-    @Autowired
-    AlbumRepository albumRepository;
 
     @BeforeEach
     void setUpForAlbumTest() {
@@ -89,6 +87,15 @@ class MemberServiceTest {
             albumService.createAlbum("albumName" + i, "tester");
         }
     }
+
+    @Test
+    void find_쿼리확인() {
+        Member member = memberService.findById(1L).orElseThrow();
+        List<Album> memberAlbum = memberService.findMemberAlbum(member);
+    }
+
+
+
 
     Member getSavedMember() {
         MemberJoinDto joinDto = new MemberJoinDto();

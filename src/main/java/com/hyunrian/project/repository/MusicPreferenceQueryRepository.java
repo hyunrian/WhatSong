@@ -1,7 +1,6 @@
 package com.hyunrian.project.repository;
 
 import com.hyunrian.project.domain.MusicPreference;
-import com.hyunrian.project.domain.QMusicPreference;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
@@ -29,20 +28,7 @@ public class MusicPreferenceQueryRepository {
                 .where(musicPreference.member.id.eq(memberId))
                 .groupBy(musicPreference.genre, musicPreference.id)
                 .orderBy(musicPreference.genre.count().desc())
+                .limit(5)
                 .fetch();
     }
-
-//    private BooleanExpression likeSinger(String singer) {
-//        if (StringUtils.hasText(singer)) {
-//            return music.singer.like("%" + singer + "%");
-//        }
-//        return null;
-//    }
-//
-//    private BooleanExpression likeTitle(String title) {
-//        if (StringUtils.hasText(title)) {
-//            return music.singer.like("%" + title + "%");
-//        }
-//        return null;
-//    }
 }

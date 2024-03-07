@@ -1,7 +1,8 @@
-package com.hyunrian.project.repository;
+package com.hyunrian.project.testWithData.repository;
 
 import com.hyunrian.project.domain.Member;
 import com.hyunrian.project.dto.member.MemberJoinDto;
+import com.hyunrian.project.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

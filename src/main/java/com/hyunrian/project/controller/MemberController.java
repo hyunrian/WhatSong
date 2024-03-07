@@ -84,11 +84,11 @@ public class MemberController {
         }
 
         memberService.save(memberJoinDto);
-        memberService.sendEmail(memberJoinDto.getEmail(), SendingEmailType.JOIN);
+//        memberService.sendEmail(memberJoinDto.getEmail(), SendingEmailType.JOIN);
 
         request.getSession().setAttribute("email", memberJoinDto.getEmail());
 
-        return "redirect:/joined";
+        return "redirect:/auth";
     }
 
     /**
@@ -104,19 +104,30 @@ public class MemberController {
          * 회원가입 후 바로 메일인증을 하는 사용자인 경우 Session에 담은 값을 가져옴
          * 인증을 하지 않은 사용자가 로그인을 한 경우 Security Session에 있는 값을 가져옴
          */
-        if (authentication.getName() != null) {
-            email = authentication.getName();
-
+        String sessionEmail = (String) request.getSession().getAttribute("email");
+        if (sessionEmail != null) {
+            email = sessionEmail;
         } else {
-            email = (String) request.getSession().getAttribute("email");
+            String nickname = authentication.getName();
+            email = memberService.findEmailByNickname(nickname);
         }
+//        if (authentication.getName() != null) {
+//            email = authentication.getName();
+//            log.info("authentication.getName()={}", email);
+//
+//        } else {
+//            email = (String) request.getSession().getAttribute("email");
+//        }
 
         model.addAttribute("email", email);
 
         //로그인한 사용자가 미인증 사용자인 경우 인증메일 발송
-        Member loginMember = memberService.findByEmail(email).orElseThrow();
-        if (loginMember.getStatus().equals(MemberStatus.UNAUTH)) {
-            memberService.sendEmail(email, SendingEmailType.JOIN);
+        if (memberService.existsByEmail(email)) {
+            Member loginMember = memberService.findByEmail(email).orElseThrow();
+            if (loginMember.getStatus().equals(MemberStatus.UNAUTH)) {
+                log.info("로그인 사용자 미인증 상태 - 인증메일 발송");
+                memberService.sendEmail(email, SendingEmailType.JOIN);
+            }
         }
 
         return "member/emailAuth";

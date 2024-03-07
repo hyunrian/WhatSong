@@ -51,4 +51,11 @@ public class SpotifyService {
         return SpotifyUtils.getNewReleaseAlbum(page);
     }
 
+    /**
+     * 추천 음악 정보 조회
+     */
+    public List<SpotifySearchTrack> getRecommendation(String tracks) throws IOException, ParseException, InterruptedException, SpotifyWebApiException {
+        return SpotifyUtils.getRecommendation(tracks);
+    }
+
 }
