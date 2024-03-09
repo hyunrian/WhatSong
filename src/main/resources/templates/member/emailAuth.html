@@ -87,10 +87,18 @@ toastr.options = {
 $(document).ready(function() {
     $("#resendBtn").click(function() {
     let email = $("#email").text();
-        $.ajax({
+
+    //csrf 토큰 얻기
+    let csrfToken = $("meta[name='_csrf']").attr("content");
+    let csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
+    $.ajax({
           type: "POST",
           url: "/resend",
           data: {mailType : "JOIN", email : email},
+          beforeSend: function(xhr) {
+              xhr.setRequestHeader(csrfHeader, csrfToken);
+          },
           success: function(response) {
 
             if (response) {

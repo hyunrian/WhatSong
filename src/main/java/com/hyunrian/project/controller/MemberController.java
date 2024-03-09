@@ -138,11 +138,14 @@ public class MemberController {
      */
     @GetMapping("/verify")
     public String verifyEmail(HttpSession session, @RequestParam String token) {
+        log.info("verify 진입. token={}", token);
         try {
             Member member = memberService.updateStateByToken(token);
+            log.info("member.status={}", member.getStatus());
             session.setAttribute(LoginConstant.LOGIN_MEMBER, member.getNickname());
         } catch (Exception e) {
             // 토큰 값이 없는 경우 잘못된 접근입니다 페이지
+            log.info("Exception", e);
         }
         return "redirect:/verified";
     }
